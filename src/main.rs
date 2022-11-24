@@ -1,4 +1,4 @@
-use std::process::Command;
+use std::{process::Command, path::Path};
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -7,6 +7,8 @@ struct Args
     {
     /// the rm command to be executed
     cmd: String,
+    /// regular expressions matching 
+    rgex: Option<String>,
     }
 
 fn main() 
@@ -16,11 +18,10 @@ fn main()
 
     let args = Args::parse();
 
-    println!("{:?}", args.cmd);
-
     let cmd_prefix = "mv ";
-    let cmd_suffix = " ~/.local/share/Trash/files";
-
+    let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
+    let srm_trash = "/home/home/Desktop/.saferm_trash";
+    // /home/home/.local/share/Trash/files/
     /*
     let mut cmd = String::new();
     cmd.push_str(cmd_prefix);
@@ -30,8 +31,13 @@ fn main()
 
     // println!("{:?}", cmd);
 
-    let pwd_path = Command::new("pwd").output().unwrap();
+    let pwd_vec = Command::new("pwd").output().unwrap().stdout;
+    let pwd_path = String::from_utf8(pwd_vec[0..pwd_vec.len()-1].to_vec()).unwrap() + "/";
 
+    let mut cmd = Command::new("mv");
+    cmd.arg("./".to_string() + &args.cmd.to_owned());
+    cmd.arg(trashcan_path);
+    cmd.spawn().unwrap();
 
-    Command::new(cmd_prefix).args(&[args.cmd, pwd_path.stdout.to_string() + &cmd_suffix.to_owned(), cmd_suffix.to_owned()]).output().expect("mv failed");
+    println!("{:?}", cmd);
     }
