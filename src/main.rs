@@ -2,29 +2,31 @@ use std::{process::Command, path::Path};
 use clap::Parser;
 
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version, about)]
 struct Args
     {
-    /// the rm command to be executed
+    /// the file to be removed
     cmd: String,
-    /// regular expressions matching 
+    /// wildcard expressions matching 
     rgex: Option<String>,
     }
 
 fn main() 
     {
-    println!("saferm");
-    println!("powered with <3 by Rust");
-
     let args = Args::parse();
 
-    let cmd_prefix = "mv ";
     let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
 
-    let mut cmd = Command::new("mv");
-    cmd.arg("./".to_string() + &args.cmd.to_owned());
-    cmd.arg(trashcan_path);
-    cmd.spawn().unwrap();
+    println!("saferm: powered with <3 by Rust");
 
-    println!("{:?}", cmd);
+    let cmd = Command::new("mv")
+        .arg("./".to_string() + &args.cmd.to_owned())
+        .arg(trashcan_path)
+        .spawn();
+
+    match cmd
+        {
+        Ok(_) => { cmd.unwrap(); },
+        Err(e) => { println!("{:?}", e); }
+        }
     }
