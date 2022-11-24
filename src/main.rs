@@ -20,19 +20,6 @@ fn main()
 
     let cmd_prefix = "mv ";
     let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
-    let srm_trash = "/home/home/Desktop/.saferm_trash";
-    // /home/home/.local/share/Trash/files/
-    /*
-    let mut cmd = String::new();
-    cmd.push_str(cmd_prefix);
-    cmd.push_str(&args.cmd);
-    cmd.push_str(cmd_suffix);
-    */
-
-    // println!("{:?}", cmd);
-
-    let pwd_vec = Command::new("pwd").output().unwrap().stdout;
-    let pwd_path = String::from_utf8(pwd_vec[0..pwd_vec.len()-1].to_vec()).unwrap() + "/";
 
     let mut cmd = Command::new("mv");
     cmd.arg("./".to_string() + &args.cmd.to_owned());
