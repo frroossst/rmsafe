@@ -1,4 +1,4 @@
-use std::{process::Command, path::{Path, PathBuf}};
+use std::{process::Command, path::{Path, PathBuf}, io::Read};
 use clap::Parser;
 use glob::glob;
 
@@ -40,12 +40,16 @@ fn main()
             {   },
         }
 
-    println!();
     }
 
 fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
     // TODO: make username variable
+    // let mut buf = String::new();
+    // Command::new("whoami").spawn().unwrap().stdout.unwrap().read_to_string(&mut buf).unwrap();
+
+    // let cstr_path = "/home/".to_owned() + &buf + "/.local/share/Trash/files";
+    // println!("{:?}", cstr_path);
     let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
 
     let mv_cmd = Command::new("mv")
