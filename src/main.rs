@@ -14,7 +14,6 @@ struct Args
     #[clap(short, long, value_parser)]
     rgex: Option<String>,
     }
-
 fn main() 
     {
     let args = Args::parse();
