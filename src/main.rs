@@ -23,8 +23,12 @@ fn main()
 
     match args.file
         {
-        None => {},
-        Some(c) => { move_file_to_trash(PathBuf::from(c)); },
+        Some(c) => 
+            { 
+            move_file_to_trash(PathBuf::from(c)); 
+            },
+        None => 
+            {   },
         }
 
     match args.rgex
