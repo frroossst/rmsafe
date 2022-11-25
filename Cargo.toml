@@ -1,5 +1,5 @@
 [package]
-name = "safe-rm"
+name = "safe_rm"
 version = "1.3.0"
 edition = "2021"
 about = "safely removing files and directories; moving them to trash"
