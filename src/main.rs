@@ -6,11 +6,11 @@ use glob::glob;
 #[command(author, version, about)]
 struct Args
     {
-    /// the file to be removed
+    /// Name of the singular file to be removed
     #[clap(short, long, value_parser)]
-    cmd: Option<String>,
+    file: Option<String>,
 
-    /// wildcard expressions matching 
+    /// Wildcard expression matching pattern
     #[clap(short, long, value_parser)]
     rgex: Option<String>,
     }
@@ -21,29 +21,26 @@ fn main()
 
     println!("saferm: powered with <3 by Rust");
 
-    // TODO: iterate and rm
-    // let mut ls_cmd = Command::new("ls");
-    // let ls_output = ls_cmd.spawn().unwrap();
-    // let a = ls_output.stdout;
-    // println!("{:?}", a);
-
-    for entry in glob(&args.rgex.unwrap()).unwrap()
+    match args.file
         {
-        match entry
-            {
-            Ok(p) => 
-                { 
-                println!("{:?}", p.display()); 
-                move_to_trash(p);
-                },
-            Err(e) => { println!("{:?}", e); },
-            }
+        None => {},
+        Some(c) => { move_file_to_trash(PathBuf::from(c)); },
         }
 
+    match args.rgex
+        {
+        Some(r) => 
+            {
+            move_pattern_to_trash(&r);
+            },
+        None =>
+            {   },
+        }
 
+    println!();
     }
 
-fn move_to_trash(file_to_be_trashed: PathBuf)
+fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
     // TODO: make username variable
     let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
@@ -56,6 +53,26 @@ fn move_to_trash(file_to_be_trashed: PathBuf)
     match mv_cmd
         {
         Ok(_) => { mv_cmd.unwrap(); },
-        Err(e) => { eprintln!("{:?}", e); }
+        Err(e) => { println!("{:?}", e); }
+        }
+    }
+
+fn move_pattern_to_trash(pattern: &str)
+    {
+    for entry in glob(pattern).unwrap()
+        {
+        match entry
+            {
+            Ok(p) => 
+                { 
+                println!("removing: "); 
+                print!("{:?}, ", p.display()); 
+                move_file_to_trash(p);
+                },
+            Err(e) => 
+                { 
+                println!("{:?}", e); 
+                },
+            }
         }
     }
