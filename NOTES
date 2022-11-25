@@ -1,1 +1,3 @@
 mv $(file args) ~/.local/share/Trash/files
+
+change rm path

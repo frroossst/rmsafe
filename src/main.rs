@@ -18,7 +18,7 @@ fn main()
     {
     let args = Args::parse();
 
-    println!("saferm: powered with <3 by Rust");
+    println!("rmsafe: powered with <3 by Rust");
 
     match args.file
         {
