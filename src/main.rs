@@ -1,5 +1,5 @@
 use rmsafe::{trashcan_config, remove_util, misc_util};
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use clap::Parser;
 
 
@@ -19,11 +19,8 @@ struct Args
     /// Change trashcan path
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
-
-    /// Show trashcan path
-    #[clap(default_value="")]
-    show: String,
     }
+
 fn main() 
     {
     let args = Args::parse();
@@ -64,15 +61,9 @@ fn main()
             {   },
         }
 
-    match args.show
+    if flag
         {
-        _ => 
-            {
-            if flag
-                {
-                misc_util::display_settings()
-                }
-            },
+        misc_util::display_settings()
         }
 
     }

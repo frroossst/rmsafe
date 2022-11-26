@@ -27,10 +27,13 @@ pub fn get_trashcan_location() -> String
 pub fn set_trashcan_path(t: String)
     {
     let mut cfg:RmsafeConfig = confy::load("rmsafe", None).unwrap();
+
     let old_path = cfg.trashcan_location;
     let new_path = String::from(t.clone());
+
     cfg.trashcan_location = t;
     let cnfy_cfg = confy::store("rmsafe", None, cfg);
+
     match cnfy_cfg
         {
         Ok(_) =>
@@ -39,7 +42,6 @@ pub fn set_trashcan_path(t: String)
             }
         Err(e) =>
             {
-            eprintln!("unable to write new trashcan path to config file");
             eprintln!("[ERROR] {:?}", e);
             }
         }
@@ -49,6 +51,7 @@ fn get_default_trashcan_location() -> String
     {
     let mut usr_id = String::new();
     let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
+
     match whoami_cmd
         {
         Ok(w) =>
@@ -62,13 +65,13 @@ fn get_default_trashcan_location() -> String
                     }
                 Err(_) =>
                     {
-                    println!("[ERROR] reading String from utf8 bytes");
+                    std::process::exit(1);
                     }
                 }
             }
-        Err(e) =>
+        Err(_) =>
             {
-            println!("whoami returns {:?}", e);
+            std::process::exit(1);
             }
         }
 
