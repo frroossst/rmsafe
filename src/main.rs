@@ -45,11 +45,13 @@ fn main()
 
     println!("rmsafe: powered with <3 by Rust");
 
+    let mut flag: bool = true;
     match args.file
         {
         Some(c) => 
             { 
             move_file_to_trash(PathBuf::from(c)); 
+            flag = false;
             },
         None => 
             {   },
@@ -60,6 +62,7 @@ fn main()
         Some(r) => 
             {
             move_pattern_to_trash(&r);
+            flag = false;
             },
         None =>
             {   },
@@ -70,6 +73,7 @@ fn main()
         Some(t) =>
             {
             set_trashcan_path(t);
+            flag = false;
             },
         None =>
             {   },
@@ -79,7 +83,10 @@ fn main()
         {
         _ => 
             {
-            display_settings()
+            if flag
+                {
+                display_settings()
+                }
             },
         }
 
