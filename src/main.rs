@@ -1,4 +1,4 @@
-use std::{process::Command, path::{Path, PathBuf}, io::Read};
+use std::{process::Command, path::{Path, PathBuf}};
 use clap::Parser;
 use glob::glob;
 
@@ -45,12 +45,35 @@ fn main()
 fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
     // TODO: make username variable
-    // let mut buf = String::new();
-    // Command::new("whoami").spawn().unwrap().stdout.unwrap().read_to_string(&mut buf).unwrap();
+    let mut usr_id = String::new();
+    let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
+    match whoami_cmd
+        {
+        Ok(w) =>
+            {
+            let whoami_str = String::from_utf8(w.stdout); //.replace("\n", ""));
+            match whoami_str
+                {
+                Ok(s) =>
+                    {
+                    usr_id = s.replace("\n", "");
+                    }
+                Err(_) =>
+                    {
+                    println!("[ERROR] reading String from utf8 bytes");
+                    }
+                }
+            }
+        Err(e) =>
+            {
+            println!("whoami returns {:?}", e);
+            }
+        }
 
-    // let cstr_path = "/home/".to_owned() + &buf + "/.local/share/Trash/files";
-    // println!("{:?}", cstr_path);
-    let trashcan_path = Path::new("/home/home/.local/share/Trash/files");
+    let trashcan_path_prefix = "/home/";
+    let trashcan_path_suffix = "/.local/share/Trash/files";
+    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
+    let trashcan_path = Path::new(&trashcan_str);
 
     let mv_cmd = Command::new("mv")
         .arg(&file_to_be_trashed.to_owned())
@@ -59,8 +82,14 @@ fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     match mv_cmd
         {
-        Ok(_) => { mv_cmd.unwrap(); },
-        Err(e) => { println!("{:?}", e); }
+        Ok(_) => 
+            { 
+            mv_cmd.unwrap(); 
+            },
+        Err(e) => 
+            { 
+            println!("{:?}", e); 
+            }
         }
     }
 
