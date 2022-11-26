@@ -34,6 +34,10 @@ struct Args
     /// Change trashcan path
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
+
+    /// Show trashcan path
+    #[clap(default_value="")]
+    show: String,
     }
 fn main() 
     {
@@ -69,6 +73,14 @@ fn main()
             },
         None =>
             {   },
+        }
+
+    match args.show
+        {
+        _ => 
+            {
+            display_settings()
+            },
         }
 
     }
@@ -175,4 +187,9 @@ fn set_trashcan_path(t: String)
             eprintln!("[ERROR] {:?}", e);
             }
         }
+    }
+
+fn display_settings()
+    {
+    println!("trashcan path: {:?}", get_trashcan_location());
     }
