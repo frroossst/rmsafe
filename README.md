@@ -1,4 +1,4 @@
-# saferm (safely_remove)
+# rmsafe (remove_safely)
 
 ## Introduction
 
