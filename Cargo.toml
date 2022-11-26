@@ -1,6 +1,6 @@
 [package]
 name = "rmsafe"
-version = "1.5.0"
+version = "1.6.0"
 edition = "2021"
 about = "safely removing files and directories; moving them to trash"
 description = "after almost accidentally rm(ing) my C homework folder, I decided to create this to NOT do that in the future, goal is to do everything that the unix command rm can do"
@@ -12,3 +12,6 @@ authors = ["Adhyan H. <adhyanpatel@gmail.com>"]
 [dependencies]
 clap = { version = "4.0.26", features = ["derive"] }
 glob = "0.3.0"
+confy = "0.5.1"
+serde = "1.0.147"
+serde_derive = "1.0.147"
