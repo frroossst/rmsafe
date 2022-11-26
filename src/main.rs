@@ -2,6 +2,8 @@ use std::{process::Command, path::{Path, PathBuf}};
 use clap::Parser;
 use glob::glob;
 
+
+
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 struct Args
@@ -44,35 +46,7 @@ fn main()
 
 fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
-    // TODO: make username variable
-    let mut usr_id = String::new();
-    let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
-    match whoami_cmd
-        {
-        Ok(w) =>
-            {
-            let whoami_str = String::from_utf8(w.stdout); //.replace("\n", ""));
-            match whoami_str
-                {
-                Ok(s) =>
-                    {
-                    usr_id = s.replace("\n", "");
-                    }
-                Err(_) =>
-                    {
-                    println!("[ERROR] reading String from utf8 bytes");
-                    }
-                }
-            }
-        Err(e) =>
-            {
-            println!("whoami returns {:?}", e);
-            }
-        }
-
-    let trashcan_path_prefix = "/home/";
-    let trashcan_path_suffix = "/.local/share/Trash/files";
-    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
+    let trashcan_str = get_default_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
 
     let mv_cmd = Command::new("mv")
@@ -111,4 +85,38 @@ fn move_pattern_to_trash(pattern: &str)
                 },
             }
         }
+    }
+
+fn get_default_trashcan_location() -> String
+    {
+    let mut usr_id = String::new();
+    let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
+    match whoami_cmd
+        {
+        Ok(w) =>
+            {
+            let whoami_str = String::from_utf8(w.stdout); //.replace("\n", ""));
+            match whoami_str
+                {
+                Ok(s) =>
+                    {
+                    usr_id = s.replace("\n", "");
+                    }
+                Err(_) =>
+                    {
+                    println!("[ERROR] reading String from utf8 bytes");
+                    }
+                }
+            }
+        Err(e) =>
+            {
+            println!("whoami returns {:?}", e);
+            }
+        }
+
+    let trashcan_path_prefix = "/home/";
+    let trashcan_path_suffix = "/.local/share/Trash/files";
+    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
+
+    trashcan_str
     }
