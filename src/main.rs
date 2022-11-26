@@ -16,7 +16,7 @@ struct Args
     #[clap(short, long, value_parser)]
     rgex: Option<String>,
 
-    /// Change trashcan path
+    /// Change or show trashcan path
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
     }
@@ -27,16 +27,18 @@ fn main()
 
     println!("rmsafe: powered with <3 by Rust");
 
-    let mut flag: bool = true;
+    let mut flag: bool = false;
+
     match args.file
         {
-        Some(c) => 
-            { 
-            remove_util::move_file_to_trash(PathBuf::from(c)); 
-            flag = false;
+        Some(f) =>
+            {
+            remove_util::move_file_to_trash(PathBuf::from(f)); 
             },
-        None => 
-            {   },
+        None =>
+            {   
+            flag = true;
+            },
         }
 
     match args.rgex
@@ -44,10 +46,11 @@ fn main()
         Some(r) => 
             {
             remove_util::move_pattern_to_trash(&r);
-            flag = false;
             },
         None =>
-            {   },
+            {   
+            flag = true;
+            },
         }
 
     match args.trsh
@@ -55,15 +58,16 @@ fn main()
         Some(t) =>
             {
             trashcan_config::set_trashcan_path(t);
-            flag = false;
             },
         None =>
-            {   },
+            {
+            flag = true;
+            },
         }
 
     if flag
         {
-        misc_util::display_settings()
+        misc_util::display_settings();
         }
 
     }
