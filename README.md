@@ -14,9 +14,12 @@ Instead of just rm(ing) files and folders, they instead are moved to the local t
 
 ## Usage
 
-NOTE: I have only tested this on Linux. 
+NOTE: I have only tested this on Linux Mint 20.3. 
 
 ```
+// view trashcan path
+rmsafe 
+
 // removing a single file
 rmsafe -f test.txt
 
@@ -25,4 +28,11 @@ rmsafe -f test_dir
 
 // removing files with wildcard matching; removing all files ending with .o
 rmsafe -r "*.o"  
+
+// change trashcan path
+rmsafe -t "/home/jane/Desktop/.rmsafe"
 ```
+
+## Contribution
+
+Open up an issue on GitHub and I'll be in touch!

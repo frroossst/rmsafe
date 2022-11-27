@@ -49,7 +49,6 @@ pub fn set_trashcan_path(t: String)
 
 fn get_default_trashcan_location() -> String
     {
-    let mut usr_id = String::new();
     let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
 
     match whoami_cmd
@@ -61,7 +60,12 @@ fn get_default_trashcan_location() -> String
                 {
                 Ok(s) =>
                     {
-                    usr_id = s.replace("\n", "");
+                    let usr_id = s.replace("\n", "");
+                    let trashcan_path_prefix = "/home/";
+                    let trashcan_path_suffix = "/.local/share/Trash/files";
+                    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
+
+                    trashcan_str
                     }
                 Err(_) =>
                     {
@@ -74,10 +78,4 @@ fn get_default_trashcan_location() -> String
             std::process::exit(1);
             }
         }
-
-    let trashcan_path_prefix = "/home/";
-    let trashcan_path_suffix = "/.local/share/Trash/files";
-    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
-
-    trashcan_str
     }

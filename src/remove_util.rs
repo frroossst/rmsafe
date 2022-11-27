@@ -11,6 +11,7 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     let trashcan_path = Path::new(&trashcan_str);
 
     let status = Command::new("mv")
+        .arg("-f")
         .arg(&file_to_be_trashed.to_owned())
         .arg(trashcan_path)
         .output();
