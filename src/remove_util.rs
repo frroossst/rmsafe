@@ -10,11 +10,22 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     let trashcan_str = trashcan_config::get_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
 
-    Command::new("mv")
+    let status = Command::new("mv")
         .arg(&file_to_be_trashed.to_owned())
         .arg(trashcan_path)
-        .output()
-        .expect("unable to remove file");
+        .output();
+
+    match status
+        {
+        Ok(_) =>
+            {
+            println!("removing {:?}", file_to_be_trashed);
+            }
+        Err(_) =>
+            {
+            std::process::exit(1);
+            }
+        }
 
     }
 

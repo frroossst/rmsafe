@@ -27,7 +27,7 @@ fn main()
 
     println!("rmsafe: powered with <3 by Rust");
 
-    let mut flag: bool = false;
+    let (mut flag_f, mut flag_r, mut flag_t) = (false, false, false);
 
     match args.file
         {
@@ -37,7 +37,7 @@ fn main()
             },
         None =>
             {   
-            flag = true;
+            flag_f = true;
             },
         }
 
@@ -49,7 +49,7 @@ fn main()
             },
         None =>
             {   
-            flag = true;
+            flag_r = true;
             },
         }
 
@@ -61,11 +61,11 @@ fn main()
             },
         None =>
             {
-            flag = true;
+            flag_t = true;
             },
         }
 
-    if flag
+    if flag_f && flag_r && flag_t
         {
         misc_util::display_settings();
         }
