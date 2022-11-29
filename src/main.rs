@@ -9,8 +9,8 @@ use clap::Parser;
 struct Args
     {
     /// Name of the singular file to be removed
-    #[clap(short, long, value_parser)]
-    file: Option<String>,
+    #[clap(value_parser, default_value="")]
+    file: String,
 
     /// Wildcard expression matching pattern
     #[clap(short, long, value_parser)]
@@ -27,8 +27,9 @@ fn main()
 
     println!("rmsafe: powered with <3 by Rust");
 
-    let (mut flag_f, mut flag_r, mut flag_t) = (false, false, false);
+    let (mut flag_r, mut flag_t) = (false, false);
 
+    /*
     match args.file
         {
         Some(f) =>
@@ -40,6 +41,7 @@ fn main()
             flag_f = true;
             },
         }
+    */
 
     match args.rgex
         {
@@ -65,9 +67,16 @@ fn main()
             },
         }
 
-    if flag_f && flag_r && flag_t
+    if !args.file.trim().is_empty()
         {
-        misc_util::display_settings();
+        remove_util::move_file_to_trash(PathBuf::from(args.file)); 
+        }
+     else 
+        {
+        if flag_r && flag_t
+            {
+            misc_util::display_settings();
+            }
         }
 
     }
