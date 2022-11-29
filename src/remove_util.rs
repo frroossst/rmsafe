@@ -18,12 +18,31 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     match status
         {
-        Ok(_) =>
+        Ok(s) =>
             {
-            println!("removing {:?}", file_to_be_trashed);
+            let cmd_err_status = String::from_utf8(s.stderr);
+            match cmd_err_status
+                {
+                Ok(conv) =>
+                    {
+                    if conv.trim().is_empty()
+                        {
+                        println!("removing {:?}", file_to_be_trashed);
+                        }
+                    else 
+                        {
+                        println!("unable to move {:?}", file_to_be_trashed);
+                        }
+                    }
+                Err(_) =>
+                    {
+                    println!("unable to move {:?}", file_to_be_trashed);
+                    }
+                }
             }
         Err(_) =>
             {
+            println!("unable to move {:?}", file_to_be_trashed);
             std::process::exit(1);
             }
         }
