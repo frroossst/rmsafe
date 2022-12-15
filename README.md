@@ -21,10 +21,10 @@ NOTE: I have only tested this on Linux Mint 20.3.
 rmsafe 
 
 // removing a single file
-rmsafe -f test.txt
+rmsafe test.txt
 
 // removing a single folder; it will recursively move the folder to trash
-rmsafe -f test_dir
+rmsafe test_dir
 
 // removing files with wildcard matching; removing all files ending with .o
 rmsafe -r "*.o"  
