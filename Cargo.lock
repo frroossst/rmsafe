@@ -133,6 +133,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc7fcc620a3bff7cdd7a365be3376c97191aeaccc2a603e600951e452615bf89"
 
 [[package]]
+name = "love_rust"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0212a536f2de2a67f76e16edf971d82848fb98985ebb43d009195f2407438210"
+
+[[package]]
 name = "once_cell"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -208,11 +214,12 @@ dependencies = [
 
 [[package]]
 name = "rmsafe"
-version = "2.1.0"
+version = "2.1.2"
 dependencies = [
  "clap",
  "confy",
  "glob",
+ "love_rust",
  "serde",
  "serde_derive",
 ]

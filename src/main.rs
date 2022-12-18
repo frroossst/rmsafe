@@ -1,11 +1,12 @@
 use rmsafe::{trashcan_config, remove_util, misc_util};
+use love_rust::love_rust;
 use std::path::PathBuf;
 use clap::Parser;
 
 
 
 #[derive(Parser, Debug)]
-#[command(author, version, about)]
+#[command(author, version)]
 struct Args
     {
     /// Name of the singular file to be removed
@@ -16,7 +17,7 @@ struct Args
     #[clap(short, long, value_parser)]
     rgex: Option<String>,
 
-    /// Show trashcan path
+    /// Change trashcan path
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
 
@@ -29,7 +30,8 @@ fn main()
     {
     let args = Args::parse();
 
-    println!("rmsafe: powered with <3 by Rust");
+    print!("rmsafe: ");
+    love_rust!();
 
     let (mut flag_r, mut flag_t) = (false, false);
 
