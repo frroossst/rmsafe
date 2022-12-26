@@ -1,5 +1,5 @@
 use serde_derive::{Serialize, Deserialize};
-use std::process::Command;
+use std::{process::Command, fs, path::Path};
 
 
 
@@ -37,7 +37,17 @@ pub fn set_trashcan_path(t: String)
     match cnfy_cfg
         {
         Ok(_) =>
-            { 
+            {
+            let path = Path::new(&new_path);
+            if !path.exists()
+                {
+                match fs::create_dir(path)
+                    {
+                    Ok(_) => { println!("created trashcan folder at path: {:?}", path); },
+                    Err(e) => { eprintln!("[ERROR] {:?}", e) }
+                    }
+                }
+
             println!("trashcan location changed from {:?} to {:?}", old_path, new_path);
             }
         Err(e) =>
