@@ -31,17 +31,21 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
                         }
                     else 
                         {
-                        println!("unable to move {:?}", file_to_be_trashed);
+                        eprintln!("{:?}", conv);
+                        eprintln!("attempting a rename and move on {:?}", file_to_be_trashed);
+                        retry_move_with_file_rename(file_to_be_trashed)
                         }
                     }
                 Err(_) =>
                     {
+                    panic!();
                     println!("unable to move {:?}", file_to_be_trashed);
                     }
                 }
             }
         Err(_) =>
             {
+            panic!();
             println!("unable to move {:?}", file_to_be_trashed);
             std::process::exit(1);
             }
@@ -67,4 +71,15 @@ pub fn move_pattern_to_trash(pattern: &str)
                 },
             }
         }
+    }
+
+// If a similarly named folder exists in the
+// trash folder then the mv command fails 
+// with error, Directory not empty
+// rmsafe changes the target file's name and
+// then attempts the move, this is implemented
+// because of common folder names like
+// .git/ .cache/ etc.
+pub fn retry_move_with_file_rename(filename: PathBuf)
+    {
     }
