@@ -13,6 +13,7 @@ authors = ["Adhyan H. <adhyanpatel@gmail.com>"]
 love_rust = "0.2.2"
 clap = { version = "4.0.26", features = ["derive"] }
 glob = "0.3.0"
+rand = "0.8.5"
 confy = "0.5.1"
 serde = "1.0.147"
 serde_derive = "1.0.147"
