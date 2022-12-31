@@ -85,4 +85,18 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
     {
     let dt_obj = Local::now();
     let timestamp = dt_obj.timestamp();
+
+    unimplemented!();
+
+    // Rename current file and then attempt a move to trashcan, this should only
+    // be done once
+
+    let timestamp_name = filename + timestamp.to_string();
+    println!("timestamp: {:?}", timestamp);
+
+    let status = Command::new("mv")
+        .arg("-f")
+        .arg(&filename.to_owned())
+        .arg(timestamp_name)
+        .output();
     }
