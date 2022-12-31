@@ -83,14 +83,10 @@ pub fn move_pattern_to_trash(pattern: &str)
 // .git/ .cache/ etc.
 pub fn retry_move_with_file_rename(filename: PathBuf)
     {
-
     // Rename current file and then attempt a move to trashcan, this should only
     // be done once
 
-    let timestamp_name = concat_pathbuf_to_filename(filename);
-    println!("{:?}", timestamp_name);
-
-    panic!();
+    let timestamp_name = concat_pathbuf_to_filename(filename.clone());
 
     let status = Command::new("mv")
         .arg("-f")
@@ -114,6 +110,7 @@ fn concat_pathbuf_to_filename(file_path: PathBuf) -> PathBuf
         }
     else
         {
-        return file_path;
+        let converted_timestamp_name = timestamp_name.to_owned() + "_" + &timestamp.to_string();
+        return PathBuf::from(converted_timestamp_name);
         }
     }
