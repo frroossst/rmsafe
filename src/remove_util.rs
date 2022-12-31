@@ -39,14 +39,12 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
                     }
                 Err(_) =>
                     {
-                    panic!();
                     println!("unable to move {:?}", file_to_be_trashed);
                     }
                 }
             }
         Err(_) =>
             {
-            panic!();
             println!("unable to move {:?}", file_to_be_trashed);
             std::process::exit(1);
             }
@@ -83,16 +81,47 @@ pub fn move_pattern_to_trash(pattern: &str)
 // .git/ .cache/ etc.
 pub fn retry_move_with_file_rename(filename: PathBuf)
     {
-    // Rename current file and then attempt a move to trashcan, this should only
-    // be done once
-
     let timestamp_name = concat_pathbuf_to_filename(filename.clone());
 
+    // this is just a rename
     let status = Command::new("mv")
         .arg("-f")
         .arg(&filename.to_owned())
         .arg(timestamp_name)
         .output();
+
+    match status
+        {
+        Ok(s) =>
+            {
+            let cmd_err_status = String::from_utf8(s.stderr);
+            match cmd_err_status
+                {
+                Ok(conv) =>
+                    {
+                    if conv.trim().is_empty()
+                        {
+                        println!("removing {:?}", timestamp_name);
+                        }
+                    else 
+                        {
+                        eprintln!("{:?}", conv);
+                        panic!("mv to trash failed even after a rename");
+                        }
+                    }
+                Err(_) =>
+                    {
+                    eprintln!("unable to move {:?}", timestamp_name);
+                    }
+                }
+            }
+        Err(_) =>
+            {
+            eprintln!("unable to move {:?}", timestamp_name);
+            std::process::exit(1);
+            }
+        }
+
     }
 
 fn concat_pathbuf_to_filename(file_path: PathBuf) -> PathBuf
