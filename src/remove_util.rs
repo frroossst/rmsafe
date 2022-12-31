@@ -83,20 +83,37 @@ pub fn move_pattern_to_trash(pattern: &str)
 // .git/ .cache/ etc.
 pub fn retry_move_with_file_rename(filename: PathBuf)
     {
-    let dt_obj = Local::now();
-    let timestamp = dt_obj.timestamp();
-
-    unimplemented!();
 
     // Rename current file and then attempt a move to trashcan, this should only
     // be done once
 
-    let timestamp_name = filename + timestamp.to_string();
-    println!("timestamp: {:?}", timestamp);
+    let timestamp_name = concat_pathbuf_to_filename(filename);
+    println!("{:?}", timestamp_name);
+
+    panic!();
 
     let status = Command::new("mv")
         .arg("-f")
         .arg(&filename.to_owned())
         .arg(timestamp_name)
         .output();
+    }
+
+fn concat_pathbuf_to_filename(file_path: PathBuf) -> PathBuf
+    {
+    let dt_obj = Local::now();
+    let timestamp = dt_obj.timestamp();
+
+    let timestamp_name = file_path.to_string_lossy().into_owned(); // + &timestamp.to_string();
+
+    if (timestamp_name.chars().last().unwrap() == '/')
+        {
+        let length = timestamp_name.len();
+        let converted_timestamp_name = timestamp_name.get(0..length - 1).unwrap().to_owned() + "_" + &timestamp.to_string() + "/";
+        return PathBuf::from(converted_timestamp_name);
+        }
+    else
+        {
+        return file_path;
+        }
     }
