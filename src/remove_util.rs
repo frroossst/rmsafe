@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 use crate::trashcan_config;
 use std::process::Command;
-use std::fs;
+use chrono::Local;
 use glob::glob;
 
 
@@ -83,5 +83,6 @@ pub fn move_pattern_to_trash(pattern: &str)
 // .git/ .cache/ etc.
 pub fn retry_move_with_file_rename(filename: PathBuf)
     {
-
+    let dt_obj = Local::now();
+    let timestamp = dt_obj.timestamp();
     }
