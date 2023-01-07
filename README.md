@@ -33,6 +33,15 @@ rmsafe -r "*.o"
 rmsafe -t "/home/jane/Desktop/.rmsafe"
 ```
 
+Change you `.bashrc` to include the following
+```
+alias rm='printf "Avoid using rm!"'
+alias rms="rmsafe"
+```
+
+This disallows the use of rm, you can still use `sudo rm` and not setting rmsafe to rm
+ensures that you don't accidentally rm while on someone else's computer
+
 ## Contribution
 
 Open up an issue on GitHub and I'll be in touch!
