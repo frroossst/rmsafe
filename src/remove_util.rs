@@ -82,6 +82,8 @@ pub fn move_pattern_to_trash(pattern: &str)
 pub fn retry_move_with_file_rename(filename: PathBuf)
     {
     let timestamp_name = concat_pathbuf_to_filename(filename.clone());
+    let new_filename = timestamp_name.clone();
+    let err_file_name = filename.to_str().unwrap();
 
     // this is just a rename
     let status = Command::new("mv")
@@ -101,7 +103,45 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                     {
                     if conv.trim().is_empty()
                         {
-                        println!("removing {:?}", timestamp_name);
+                        println!("renaming {:?}", err_file_name);
+
+                        let trashcan_str = trashcan_config::get_trashcan_location();
+                        let trashcan_path = Path::new(&trashcan_str);
+
+                        let status = Command::new("mv")
+                            .arg("-f")
+                            .arg(new_filename)
+                            .arg(trashcan_path)
+                            .output();
+
+                        match status
+                            {
+                            Ok(s) =>
+                                {
+                                let cmd_err_status = String::from_utf8(s.stderr);
+                                match cmd_err_status
+                                    {
+                                    Ok(conv) =>
+                                        {
+                                        if !conv.trim().is_empty()
+                                            {
+                                            eprintln!("{:?}", conv);
+                                            }
+                                        },
+                                    Err(e) =>
+                                        {
+                                        eprintln!("{}", e);
+                                        panic!("mv to trash failed after a rename {:?}", err_file_name);
+                                        }
+                                    }
+                                },
+                            Err(e) =>
+                                {
+                                eprintln!("{:?}", conv);
+                                panic!("mv to trash failed even after a rename");
+                                },
+                            }
+
                         }
                     else 
                         {
@@ -111,13 +151,13 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                     }
                 Err(_) =>
                     {
-                    eprintln!("unable to move {:?}", timestamp_name);
+                    eprintln!("unable to move {:?}", err_file_name);
                     }
                 }
             }
         Err(_) =>
             {
-            eprintln!("unable to move {:?}", timestamp_name);
+            eprintln!("An error occurred removing {:?}", err_file_name);
             std::process::exit(1);
             }
         }
