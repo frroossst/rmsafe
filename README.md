@@ -33,7 +33,7 @@ rmsafe -r "*.o"
 rmsafe -t "/home/jane/Desktop/.rmsafe"
 ```
 
-Change you `.bashrc` to include the following
+Change your `.bashrc` to include the following
 ```
 alias rm='printf "Avoid using rm!"'
 alias rms="rmsafe"
