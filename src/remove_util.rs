@@ -17,35 +17,36 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
         .arg(trashcan_path)
         .output();
 
-    match status
+    match status // checks if the command failed
         {
         Ok(s) =>
             {
             let cmd_err_status = String::from_utf8(s.stderr);
-            match cmd_err_status
+            match cmd_err_status // checks if stderr occurred
                 {
                 Ok(conv) =>
                     {
-                    if conv.trim().is_empty()
+                    if conv.trim().is_empty() // command succeeded and nothing is on stderr
                         {
                         println!("removing {:?}", file_to_be_trashed);
                         }
-                    else 
+                    else // stderr has a string and calling on retry_move_with_file_rename()
                         {
-                        eprintln!("{:?}", conv);
+                        eprintln!("{:?}", conv.trim());
                         eprintln!("attempting a rename and move on {:?}", file_to_be_trashed);
                         retry_move_with_file_rename(file_to_be_trashed)
                         }
                     }
                 Err(_) =>
                     {
-                    println!("unable to move {:?}", file_to_be_trashed);
+                    eprintln!("unable to convert stderr stream to UTF8 string");
+                    std::process::exit(1);
                     }
                 }
             }
-        Err(_) =>
+        Err(e) =>
             {
-            println!("unable to move {:?}", file_to_be_trashed);
+            eprintln!("command failed: {:?}", e);
             std::process::exit(1);
             }
         }
@@ -72,6 +73,26 @@ pub fn move_pattern_to_trash(pattern: &str)
         }
     }
 
+fn concat_pathbuf_to_filename(file_path: PathBuf) -> PathBuf
+    {
+    let dt_obj = Local::now();
+    let timestamp = dt_obj.timestamp();
+
+    let timestamp_name = file_path.to_string_lossy().into_owned(); // + &timestamp.to_string();
+
+    if timestamp_name.chars().last().unwrap() == '/'
+        {
+        let length = timestamp_name.len();
+        let converted_timestamp_name = timestamp_name.get(0..length - 1).unwrap().to_owned() + "_" + &timestamp.to_string() + "/";
+        return PathBuf::from(converted_timestamp_name);
+        }
+    else
+        {
+        let converted_timestamp_name = timestamp_name.to_owned() + "_" + &timestamp.to_string();
+        return PathBuf::from(converted_timestamp_name);
+        }
+    }
+
 // If a similarly named folder exists in the
 // trash folder then the mv command fails 
 // with error, Directory not empty
@@ -85,25 +106,25 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
     let new_filename = timestamp_name.clone();
     let err_file_name = filename.to_str().unwrap();
 
-    // this is just a rename
+    // this is just a rename to the same path
     let status = Command::new("mv")
         .arg("-f")
         .arg(&filename.to_owned())
         .arg(timestamp_name)
         .output();
 
-    match status
+    match status // check the status of the local move rename
         {
         Ok(s) =>
             {
             let cmd_err_status = String::from_utf8(s.stderr);
-            match cmd_err_status
+            match cmd_err_status // check if stderr has any string
                 {
                 Ok(conv) =>
                     {
-                    if conv.trim().is_empty()
+                    if conv.trim().is_empty() // nothing on stderr
                         {
-                        println!("renaming {:?}", err_file_name);
+                        println!("renamed {:?} to {:?}", err_file_name, new_filename);
 
                         let trashcan_str = trashcan_config::get_trashcan_location();
                         let trashcan_path = Path::new(&trashcan_str);
@@ -114,7 +135,7 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                             .arg(trashcan_path)
                             .output();
 
-                        match status
+                        match status // checking the status of the actual move of the rename to trahscan
                             {
                             Ok(s) =>
                                 {
@@ -123,63 +144,47 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                                     {
                                     Ok(conv) =>
                                         {
-                                        if !conv.trim().is_empty()
+                                        if !conv.trim().is_empty() // do not recursively rename
                                             {
-                                            eprintln!("{:?}", conv);
+                                            eprintln!("rmsafe rename and move failed: {:?}", conv);
+                                            }
+                                        else
+                                            {
+                                            println!("removing {:?}", err_file_name);
                                             }
                                         },
-                                    Err(e) =>
+                                    Err(_) =>
                                         {
-                                        eprintln!("{}", e);
-                                        panic!("mv to trash failed after a rename {:?}", err_file_name);
+                                        eprintln!("unable to convert stderr stream to UTF8 string");
+                                        std::process::exit(1);
                                         }
                                     }
                                 },
                             Err(e) =>
                                 {
-                                eprintln!("{:?}", conv);
-                                panic!("mv to trash failed even after a rename");
+                                eprintln!("command failed: {:?}", e);
+                                std::process::exit(1);
                                 },
                             }
 
                         }
                     else 
                         {
-                        eprintln!("{:?}", conv);
-                        panic!("mv to trash failed even after a rename");
+                        eprintln!("couldn't rename file from {:?} to {:?}", err_file_name, new_filename);
+                        panic!("move to trash failed even after a rename"); // panics because mv failed the second time here
                         }
                     }
                 Err(_) =>
                     {
-                    eprintln!("unable to move {:?}", err_file_name);
+                    panic!("unable to move {:?}", err_file_name);
                     }
                 }
             }
-        Err(_) =>
+        Err(e) =>
             {
-            eprintln!("An error occurred removing {:?}", err_file_name);
+            eprintln!("command failed: {:?}", e);
             std::process::exit(1);
             }
         }
 
-    }
-
-fn concat_pathbuf_to_filename(file_path: PathBuf) -> PathBuf
-    {
-    let dt_obj = Local::now();
-    let timestamp = dt_obj.timestamp();
-
-    let timestamp_name = file_path.to_string_lossy().into_owned(); // + &timestamp.to_string();
-
-    if (timestamp_name.chars().last().unwrap() == '/')
-        {
-        let length = timestamp_name.len();
-        let converted_timestamp_name = timestamp_name.get(0..length - 1).unwrap().to_owned() + "_" + &timestamp.to_string() + "/";
-        return PathBuf::from(converted_timestamp_name);
-        }
-    else
-        {
-        let converted_timestamp_name = timestamp_name.to_owned() + "_" + &timestamp.to_string();
-        return PathBuf::from(converted_timestamp_name);
-        }
     }
