@@ -1,2 +1,2 @@
-- Check if the rename works with relative PathBufs
 - Add checks for vital fileglobs (~, /)
+- Test if these checks work

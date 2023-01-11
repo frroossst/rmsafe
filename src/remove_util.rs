@@ -3,6 +3,7 @@ use crate::trashcan_config;
 use std::process::Command;
 use chrono::Local;
 use glob::glob;
+use std::io;
 
 
 
@@ -55,6 +56,33 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
 pub fn move_pattern_to_trash(pattern: &str)
     {
+    let string_pattern = String::from(pattern);
+
+    match string_pattern.as_str()
+        {
+        "/" =>
+            { 
+            let mut input = String::new();
+            print!("this will delete your entire root directory, are you sure? Y/n");
+            io::stdin().read_line(&mut input).unwrap();
+            if input != "Y"
+                {
+                std::process::exit(0);
+                }
+            },
+        "~" =>
+            {
+            let mut input = String::new();
+            print!("this will delete your entire home directory, are you sure? Y/n");
+            io::stdin().read_line(&mut input).unwrap();
+            if input != "Y"
+                {
+                std::process::exit(0);
+                }
+            },
+        _ => {},
+        }
+
     for entry in glob(pattern).unwrap()
         {
         match entry
