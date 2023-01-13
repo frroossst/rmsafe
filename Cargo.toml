@@ -2,8 +2,7 @@
 name = "rmsafe"
 version = "2.2.1"
 edition = "2021"
-about = "safely removing files and directories; moving them to trash"
-description = "after almost accidentally rm(ing) my C homework folder, I decided to create this to NOT do that in the future, goal is to do everything that the unix command rm can do"
+description = "safely removing files and directories; moving them to trash"
 license = "MIT"
 authors = ["Adhyan H. <adhyanpatel@gmail.com>"]
 
