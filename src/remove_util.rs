@@ -9,6 +9,8 @@ use std::io;
 
 pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
+    check_dang
+
     let trashcan_str = trashcan_config::get_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
 
@@ -54,20 +56,25 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     }
 
+fn check_dangerous_patterns() -> Result<Ok, Err>
+    {
+    Ok(())
+    }
+
 pub fn move_pattern_to_trash(pattern: &str)
     {
     let string_pattern = String::from(pattern);
+    let match_pattern = &string_pattern[..1];
 
-    println!("reached here");
-
-    match string_pattern.as_str()
+    match match_pattern
         {
         "/" =>
             { 
             let mut input = String::new();
-            print!("this will delete your entire root directory, are you sure? Y/n");
+            println!("this will delete your entire root directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            if input != "Y"
+            println!("input: {:?}", input);
+            if input.trim() != "Y"
                 {
                 std::process::exit(0);
                 }
@@ -75,34 +82,40 @@ pub fn move_pattern_to_trash(pattern: &str)
         "~" =>
             {
             let mut input = String::new();
-            print!("this will delete your entire home directory, are you sure? Y/n");
+            println!("this will delete your entire home directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            if input != "Y"
+            println!("input: {:?}", input);
+            if input.trim() != "Y"
+                {
+                std::process::exit(0);
+                }
+            },
+        "~/" =>
+            {
+            let mut input = String::new();
+            println!("this will delete your entire home directory, are you sure? Y/n");
+            io::stdin().read_line(&mut input).unwrap();
+            println!("input: {:?}", input);
+            if input.trim() != "Y"
                 {
                 std::process::exit(0);
                 }
             },
         "*" =>
             {
-            println!("reached here 2");
             let mut input = String::new();
-            println!("this will delete all the files and folders in your current directory, are you sure? Y/n");
+            println!("this will delete everything in your current directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            if input.as_str() != "Y"
+            println!("input: {:?}", input);
+            if input.trim() != "Y"
                 {
                 std::process::exit(0);
                 }
-            else
-            {
-                println!("reached here 3");
-                std::process::exit(0);
-
-            }
             },
-        _ => { println!("escapted all") },
+        _ => {   },
         }
 
-    for entry in glob(pattern).unwrap()
+    for entry in glob(pattern).expect("unable to resolve globular pattern")
         {
         match entry
             {

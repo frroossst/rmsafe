@@ -15,3 +15,5 @@
         with an empty one.
 
 - Test if these checks work
+
+- Impl seperate function for pattern checking
