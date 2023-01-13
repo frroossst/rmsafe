@@ -58,6 +58,8 @@ pub fn move_pattern_to_trash(pattern: &str)
     {
     let string_pattern = String::from(pattern);
 
+    println!("reached here");
+
     match string_pattern.as_str()
         {
         "/" =>
@@ -80,7 +82,24 @@ pub fn move_pattern_to_trash(pattern: &str)
                 std::process::exit(0);
                 }
             },
-        _ => {},
+        "*" =>
+            {
+            println!("reached here 2");
+            let mut input = String::new();
+            println!("this will delete all the files and folders in your current directory, are you sure? Y/n");
+            io::stdin().read_line(&mut input).unwrap();
+            if input.as_str() != "Y"
+                {
+                std::process::exit(0);
+                }
+            else
+            {
+                println!("reached here 3");
+                std::process::exit(0);
+
+            }
+            },
+        _ => { println!("escapted all") },
         }
 
     for entry in glob(pattern).unwrap()
