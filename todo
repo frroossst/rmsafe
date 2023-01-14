@@ -17,3 +17,5 @@
 - Test if these checks work
 
 - Impl seperate function for pattern checking
+
+- Make sure regular file deletion has no wildcards
