@@ -1,6 +1,8 @@
 use std::path::{Path, PathBuf};
 use crate::trashcan_config;
 use std::process::Command;
+use std::result::Result;
+use std::error::Error;
 use chrono::Local;
 use glob::glob;
 use std::io;
@@ -9,7 +11,7 @@ use std::io;
 
 pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
-    check_dang
+    check_dangerous_patterns();
 
     let trashcan_str = trashcan_config::get_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
@@ -56,9 +58,9 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     }
 
-fn check_dangerous_patterns() -> Result<Ok, Err>
+fn check_dangerous_patterns(pattern: &str) -> Result<&str, &str>
     {
-    Ok(())
+    Ok(pattern)
     }
 
 pub fn move_pattern_to_trash(pattern: &str)
@@ -73,7 +75,6 @@ pub fn move_pattern_to_trash(pattern: &str)
             let mut input = String::new();
             println!("this will delete your entire root directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            println!("input: {:?}", input);
             if input.trim() != "Y"
                 {
                 std::process::exit(0);
@@ -84,7 +85,6 @@ pub fn move_pattern_to_trash(pattern: &str)
             let mut input = String::new();
             println!("this will delete your entire home directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            println!("input: {:?}", input);
             if input.trim() != "Y"
                 {
                 std::process::exit(0);
@@ -95,7 +95,6 @@ pub fn move_pattern_to_trash(pattern: &str)
             let mut input = String::new();
             println!("this will delete your entire home directory, are you sure? Y/n");
             io::stdin().read_line(&mut input).unwrap();
-            println!("input: {:?}", input);
             if input.trim() != "Y"
                 {
                 std::process::exit(0);
