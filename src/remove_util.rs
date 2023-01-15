@@ -2,7 +2,6 @@ use std::path::{Path, PathBuf};
 use crate::trashcan_config;
 use std::process::Command;
 use std::result::Result;
-use std::error::Error;
 use chrono::Local;
 use glob::glob;
 use std::io;
@@ -11,7 +10,7 @@ use std::io;
 
 pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
-    check_dangerous_patterns();
+    check_dangerous_patterns(&file_to_be_trashed);
 
     let trashcan_str = trashcan_config::get_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
@@ -58,15 +57,24 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     }
 
-fn check_dangerous_patterns(pattern: &str) -> Result<&str, &str>
+fn check_dangerous_patterns(pattern: &PathBuf) -> Result<&str, &str>
     {
-    Ok(pattern)
+    Ok(pattern.to_str().unwrap())
     }
 
 pub fn move_pattern_to_trash(pattern: &str)
     {
     let string_pattern = String::from(pattern);
-    let match_pattern = &string_pattern[..1];
+    let match_pattern; 
+
+    if string_pattern.len() == 1
+        {
+        match_pattern = &string_pattern[..1];
+        }
+    else
+        {
+        match_pattern = "";
+        }
 
     match match_pattern
         {
