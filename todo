@@ -1,4 +1,5 @@
 - Add checks for vital fileglobs (~, /)
+- Add checks before file rmeoves
 - Also check for:
     mv /path/to/important/files/* /tmp/ 
         this command would move all files in the directory /path/to/important/files/ to the /tmp/ directory, 

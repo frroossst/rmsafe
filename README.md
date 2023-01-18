@@ -42,6 +42,8 @@ alias rms="rmsafe"
 This disallows the use of rm, you can still use `sudo rm` and not setting rmsafe to rm
 ensures that you don't accidentally rm while on someone else's computer
 
+NOTE: The shell might interpret wildcards before they are passed down as function arguments which might cause problems, best to disable wildcard expansion on the shell
+
 ## Contribution
 
 Open up an issue on GitHub and I'll be in touch!
