@@ -30,8 +30,7 @@ fn main()
     {
     let args = Args::parse();
 
-    print!("rmsafe: ");
-    love_rust!();
+    println!("{}", love_rust!("rmsafe"));
 
     let (mut flag_r, mut flag_t) = (false, false);
 
