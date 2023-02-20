@@ -1,4 +1,4 @@
-- Add checks for vital fileglobs (~, /)
+- Add trashcan config so files can be recovered via the restore gui on linux
 - Add checks before file rmeoves
 - Also check for:
     mv /path/to/important/files/* /tmp/ 
