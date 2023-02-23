@@ -21,9 +21,9 @@ struct Args
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
 
-    /// Fail quietly
+    /// Recovery file settings
     #[clap(short, long, value_parser)]
-    fail: Option<String>,
+    vrec: Option<String>,
     }
 
 fn main() 
@@ -32,7 +32,7 @@ fn main()
 
     println!("{}", love_rust!("rmsafe"));
 
-    let (mut flag_r, mut flag_t) = (false, false);
+    let (mut flag_r, mut flag_t, mut flag_v) = (false, false, false);
 
     match args.rgex
         {
@@ -58,13 +58,25 @@ fn main()
             },
         }
 
+    match args.vrec
+        {
+        Some(v) =>
+            {
+            trashcan_config::set_recovery_path(v);
+            },
+        None =>
+            {
+            flag_v = true;
+            },
+        }
+
     if !args.file.trim().is_empty()
         {
         remove_util::move_file_to_trash(PathBuf::from(args.file)); 
         }
      else 
         {
-        if flag_r && flag_t
+        if flag_r && flag_t && flag_v
             {
             misc_util::display_settings();
             }

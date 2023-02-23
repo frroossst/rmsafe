@@ -30,6 +30,12 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
         .arg(trashcan_path)
         .output();
 
+    /*
+    [Trash Info]
+    Path=/home/home/Desktop/Projects/BombTheCardGame/counter
+    DeletionDate=2023-02-21T20:44:34
+    */
+
     match status // checks if the command failed
         {
         Ok(s) =>
@@ -42,6 +48,7 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
                     if conv.trim().is_empty() // command succeeded and nothing is on stderr
                         {
                         println!("removing {:?}", file_to_be_trashed);
+                        create_trashcan_info_file(file_to_be_trashed);
                         }
                     else // stderr has a string and calling on retry_move_with_file_rename()
                         {
@@ -307,4 +314,8 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
             }
         }
 
+    }
+
+fn create_trashcan_info_file(filename: PathBuf)
+    {
     }
