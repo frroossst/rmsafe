@@ -318,4 +318,5 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
 
 fn create_trashcan_info_file(filename: PathBuf)
     {
+
     }

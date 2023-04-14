@@ -17,6 +17,7 @@ confy = "0.5.1"
 chrono = "0.4.23"
 serde = "1.0.147"
 serde_derive = "1.0.147"
+toml = "0.7.3"
 
 [profile.release]
 strip = true
