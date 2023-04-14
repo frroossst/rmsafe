@@ -1,5 +1,5 @@
 use std::path::{Path, PathBuf};
-use crate::trashcan_config;
+use crate::{trashcan_config, remove_util, misc_util};
 use std::process::Command;
 use chrono::Local;
 use glob::glob;
@@ -35,7 +35,6 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     Path=/home/home/Desktop/Projects/BombTheCardGame/counter
     DeletionDate=2023-02-21T20:44:34
     */
-
     match status // checks if the command failed
         {
         Ok(s) =>
@@ -318,5 +317,5 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
 
 fn create_trashcan_info_file(filename: PathBuf)
     {
-
+    misc_util::TrashInfo::new(filename);
     }
