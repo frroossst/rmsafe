@@ -18,6 +18,26 @@ impl std::default::Default for RmsafeConfig
         }
     }
 
+pub fn set_info_file_path(i: String)
+    {
+    unimplemented!()
+    }
+
+pub fn get_info_file_path() -> String
+    {
+    unimplemented!()
+    }
+
+pub fn get_info_file_path_default() -> String
+    {
+    unimplemented!()
+    }
+
+pub fn get_default_trashcan_location() -> String
+    {
+    unimplemented!()
+    }
+
 pub fn get_trashcan_location() -> String
     {
     let cfg:RmsafeConfig = confy::load("rmsafe", None).unwrap();
@@ -53,39 +73,6 @@ pub fn set_trashcan_path(t: String)
         Err(e) =>
             {
             eprintln!("[ERROR] {:?}", e);
-            }
-        }
-    }
-
-fn get_default_trashcan_location() -> String
-    {
-    let whoami_cmd = Command::new("whoami").output(); //.read_to_string(&mut buf).unwrap();
-
-    match whoami_cmd
-        {
-        Ok(w) =>
-            {
-            let whoami_str = String::from_utf8(w.stdout); //.replace("\n", ""));
-            match whoami_str
-                {
-                Ok(s) =>
-                    {
-                    let usr_id = s.replace("\n", "");
-                    let trashcan_path_prefix = "/home/";
-                    let trashcan_path_suffix = "/.local/share/Trash/files";
-                    let trashcan_str = trashcan_path_prefix.to_owned() + &usr_id + trashcan_path_suffix;
-
-                    trashcan_str
-                    }
-                Err(_) =>
-                    {
-                    std::process::exit(1);
-                    }
-                }
-            }
-        Err(_) =>
-            {
-            std::process::exit(1);
             }
         }
     }

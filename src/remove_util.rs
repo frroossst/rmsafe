@@ -30,6 +30,7 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
                     if conv.trim().is_empty() // command succeeded and nothing is on stderr
                         {
                         println!("removing {:?}", file_to_be_trashed);
+                        add_info_file_to_trashcan(&file_to_be_trashed);
                         }
                     else // stderr has a string and calling on retry_move_with_file_rename()
                         {
@@ -215,4 +216,13 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
             }
         }
 
+    }
+
+/// info files look like this
+/// [Trash Info]
+/// Path=/home/home/Desktop/math223textbook.pdf
+/// DeletionDate=2023-09-11T00:59:06
+fn add_info_file_to_trashcan(file_name: &PathBuf) 
+    {
+    unimplemented!("add_info_file_to_trashcan() not implemented");
     }

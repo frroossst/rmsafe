@@ -21,6 +21,10 @@ struct Args
     #[clap(short, long, value_parser)]
     trsh: Option<String>,
 
+    /// Change info file path
+    #[clap(short, long, value_parser)]
+    info: Option<String>,
+
     /// Fail quietly
     #[clap(short, long, value_parser)]
     fail: Option<String>,
@@ -52,6 +56,18 @@ fn main()
         Some(t) =>
             {
             trashcan_config::set_trashcan_path(t);
+            },
+        None =>
+            {
+            flag_t = true;
+            },
+        }
+
+    match args.info
+        {
+        Some(i) =>
+            {
+            trashcan_config::set_info_file_path(i);
             },
         None =>
             {
