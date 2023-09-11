@@ -27,17 +27,16 @@ struct Args
 
     /// Fail quietly
     #[clap(short, long, value_parser)]
-    fail: Option<String>,
+    vrec: Option<String>,
     }
 
 fn main() 
     {
     let args = Args::parse();
 
-    print!("rmsafe: ");
-    love_rust!();
+    println!("{}", love_rust!("rmsafe"));
 
-    let (mut flag_r, mut flag_t) = (false, false);
+    let (mut flag_r, mut flag_t, mut flag_v) = (false, false, false);
 
     match args.rgex
         {
@@ -81,7 +80,7 @@ fn main()
         }
      else 
         {
-        if flag_r && flag_t
+        if flag_r && flag_t && flag_v
             {
             misc_util::display_settings();
             }

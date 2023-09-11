@@ -7,6 +7,7 @@ use std::{process::Command, fs, path::Path};
 pub struct RmsafeConfig
     {
     pub trashcan_location: String,
+    pub recovery_location: String,
     }
 
 impl std::default::Default for RmsafeConfig
@@ -14,7 +15,11 @@ impl std::default::Default for RmsafeConfig
     fn default() -> Self 
         {
         let t = get_default_trashcan_location();
-        Self { trashcan_location: String::from(t)  }
+        let r = get_default_info_file_path();
+            Self {
+                trashcan_location: String::from(t),
+                recovery_location: String::from(r),
+            }
         }
     }
 
@@ -28,7 +33,7 @@ pub fn get_info_file_path() -> String
     unimplemented!()
     }
 
-pub fn get_info_file_path_default() -> String
+pub fn get_default_info_file_path() -> String
     {
     unimplemented!()
     }

@@ -1,5 +1,5 @@
 use std::path::{Path, PathBuf};
-use crate::trashcan_config;
+use crate::{trashcan_config, remove_util, misc_util};
 use std::process::Command;
 use chrono::Local;
 use glob::glob;
@@ -9,6 +9,18 @@ use std::io;
 
 pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
+    let has_wildcards = check_wildcard_patterns(&file_to_be_trashed);
+    match has_wildcards
+        {
+        Some(p) => 
+            {
+            eprintln!("{:?} contains a wildcard pattern", p);
+            eprintln!("use the -r flag to enable wildcard and globbing support");
+            std::process::exit(1);
+            },
+        None => {},
+        }
+
     let trashcan_str = trashcan_config::get_trashcan_location();
     let trashcan_path = Path::new(&trashcan_str);
 
@@ -18,6 +30,11 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
         .arg(trashcan_path)
         .output();
 
+    /*
+    [Trash Info]
+    Path=/home/home/Desktop/Projects/BombTheCardGame/counter
+    DeletionDate=2023-02-21T20:44:34
+    */
     match status // checks if the command failed
         {
         Ok(s) =>
@@ -55,36 +72,116 @@ pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
 
     }
 
-pub fn move_pattern_to_trash(pattern: &str)
+fn check_dangerous_patterns(pattern: &PathBuf) -> Option<&PathBuf>
     {
-    let string_pattern = String::from(pattern);
+    let pts_msg = "unable to conver path buffer to string slice";
+    let pbuf_str = pattern.to_str().expect(pts_msg);
 
-    match string_pattern.as_str()
+    return match pbuf_str
         {
         "/" =>
             { 
-            let mut input = String::new();
-            print!("this will delete your entire root directory, are you sure? Y/n");
-            io::stdin().read_line(&mut input).unwrap();
-            if input != "Y"
-                {
-                std::process::exit(0);
-                }
+            Some(pattern)
             },
         "~" =>
             {
-            let mut input = String::new();
-            print!("this will delete your entire home directory, are you sure? Y/n");
-            io::stdin().read_line(&mut input).unwrap();
-            if input != "Y"
-                {
-                std::process::exit(0);
-                }
+            Some(pattern)
             },
-        _ => {},
+        "~/" =>
+            {
+            Some(pattern)
+            },
+        "*" =>
+            {
+            Some(pattern)
+            },
+        "?" =>
+            {
+            Some(pattern)
+            },
+        _ =>
+            { 
+            None
+            },
+        }
+    }
+
+fn check_wildcard_patterns(pattern: &PathBuf) -> Option<&PathBuf>
+    {
+    let pts_msg = "unable to conver path buffer to string slice";
+    let pbuf_str = pattern.to_str().expect(pts_msg);
+
+    let wildcard_patterns = ['?', '*'];
+
+    for i in pbuf_str.chars()
+        {
+        if (i == wildcard_patterns[0]) || (i == wildcard_patterns[1])
+            {
+            return Some(pattern);
+            }
+        }
+    None
+    }
+
+pub fn move_pattern_to_trash(pattern: &str)
+    {
+    let binding = PathBuf::from(pattern);
+    let has_dangerous_patterns = check_dangerous_patterns(&binding);
+
+    match has_dangerous_patterns
+        {
+        Some(dpat) =>
+            {
+            match dpat.to_str().unwrap()
+                {
+                "/" =>
+                    { 
+                    let mut input = String::new();
+                    println!("this will delete your entire root directory, are you sure? Y/n");
+                    io::stdin().read_line(&mut input).unwrap();
+                    if input.trim() != "Y"
+                        {
+                        std::process::exit(0);
+                        }
+                    },
+                "~" =>
+                    {
+                    let mut input = String::new();
+                    println!("this will delete your entire home directory, are you sure? Y/n");
+                    io::stdin().read_line(&mut input).unwrap();
+                    if input.trim() != "Y"
+                        {
+                        std::process::exit(0);
+                        }
+                    },
+                "~/" =>
+                    {
+                    let mut input = String::new();
+                    println!("this will delete your entire home directory, are you sure? Y/n");
+                    io::stdin().read_line(&mut input).unwrap();
+                    if input.trim() != "Y"
+                        {
+                        std::process::exit(0);
+                        }
+                    },
+                "*" =>
+                    {
+                    let mut input = String::new();
+                    println!("this will delete everything in your current directory, are you sure? Y/n");
+                    io::stdin().read_line(&mut input).unwrap();
+                    if input.trim() != "Y"
+                        {
+                        std::process::exit(0);
+                        }
+                    },
+                _ => {   },
+                    
+                }
+            }
+        None => {},
         }
 
-    for entry in glob(pattern).unwrap()
+    for entry in glob(pattern).expect("unable to resolve globular pattern")
         {
         match entry
             {
