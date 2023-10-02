@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::{path::{Path, PathBuf}, str::FromStr};
 use crate::{trashcan_config, remove_util, misc_util};
 use std::process::Command;
 use chrono::Local;
@@ -277,6 +277,7 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                                         else
                                             {
                                             println!("removing {:?}", err_file_name);
+                                            add_info_file_to_trashcan(&PathBuf::from_str(err_file_name).unwrap());
                                             }
                                         },
                                     Err(_) =>
@@ -321,5 +322,6 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
 /// DeletionDate=2023-09-11T00:59:06
 fn add_info_file_to_trashcan(file_name: &PathBuf) 
     {
-    unimplemented!("add_info_file_to_trashcan() not implemented");
+    let recov_info = misc_util::TrashInfo::new(file_name);
+    recov_info.write(trashcan_config::get_info_file_path());
     }

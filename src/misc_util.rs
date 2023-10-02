@@ -1,14 +1,14 @@
 use std::path::PathBuf;
 use crate::trashcan_config;
+use std::fs::File;
+use std::io::Write;
 use chrono::prelude::*;
-use serde::{Deserialize, Serialize};
 
 /*
 [Trash Info]
 Path=/home/home/Desktop/Projects/BombTheCardGame/counter
 DeletionDate=2023-02-21T20:44:34
 */
-#[derive(Serialize)]
 pub struct TrashInfo
     {
     path: String,
@@ -17,13 +17,27 @@ pub struct TrashInfo
 
 impl TrashInfo
     {
-    pub fn new(path: PathBuf) -> TrashInfo
+    pub fn new(path: &PathBuf) -> TrashInfo
         {
         let current_date = Utc::now();
         let deletion_date = current_date.format("%Y-%m-%dT%H:%M:%S").to_string();
         println!("deletion date: {:?}", deletion_date);
-        TrashInfo { path: path.into_os_string().into_string().unwrap(), deletion_date }
-        // write struct to file
+        TrashInfo { path: path.clone().into_os_string().into_string().unwrap(), deletion_date }
+        }
+
+    pub fn write(&self, path: String) 
+        {
+        let mut content = String::from("[Trash Info]\n");
+
+        content.push_str("Path=");
+        content.push_str(&self.path);
+        content.push_str("\n");
+
+        content.push_str("DeletionDate=");
+        content.push_str(&self.deletion_date);
+
+        let mut fobj = File::create(path).unwrap();
+        write!(fobj, "{}", content).unwrap();
         }
     }
 
