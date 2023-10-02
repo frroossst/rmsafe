@@ -25,12 +25,41 @@ impl std::default::Default for RmsafeConfig
 
 pub fn set_info_file_path(i: String)
     {
-    unimplemented!()
+    let mut cfg:RmsafeConfig = confy::load("rmsafe", None).unwrap();
+
+    let old_path = cfg.recovery_location;
+    let new_path = String::from(i.clone());
+
+    cfg.recovery_location = i;
+    let cnfy_cfg = confy::store("rmsafe", None, cfg);
+
+    match cnfy_cfg
+        {
+        Ok(_) =>
+            {
+            let path = Path::new(&new_path);
+            if !path.exists()
+                {
+                match fs::create_dir(path)
+                    {
+                    Ok(_) => { println!("created trashcan folder at path: {:?}", path); },
+                    Err(e) => { eprintln!("[ERROR] {:?}", e) }
+                    }
+                }
+
+            println!("trashcan location changed from {:?} to {:?}", old_path, new_path);
+            }
+        Err(e) =>
+            {
+            eprintln!("[ERROR] {:?}", e);
+            }
+        }
     }
 
 pub fn get_info_file_path() -> String
     {
-    unimplemented!()
+    let cfg:RmsafeConfig = confy::load("rmsafe", None).unwrap();
+    cfg.recovery_location
     }
 
 pub fn get_default_info_file_path() -> String
