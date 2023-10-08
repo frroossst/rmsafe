@@ -21,7 +21,6 @@ impl TrashInfo
         {
         let current_date = Utc::now();
         let deletion_date = current_date.format("%Y-%m-%dT%H:%M:%S").to_string();
-        println!("deletion date: {:?}", deletion_date);
         TrashInfo { file_name: path.clone().into_os_string().into_string().unwrap(), deletion_date }
         }
 
