@@ -1,5 +1,5 @@
 use std::{path::{Path, PathBuf}, str::FromStr};
-use crate::{trashcan_config, remove_util, misc_util};
+use crate::{trashcan_config, misc_util};
 use std::process::Command;
 use chrono::Local;
 use glob::glob;

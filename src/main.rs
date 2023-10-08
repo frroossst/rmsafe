@@ -36,7 +36,7 @@ fn main()
 
     println!("{}", love_rust!("rmsafe"));
 
-    let (mut flag_r, mut flag_t, mut flag_v) = (false, false, false);
+    let (mut flag_r, mut flag_t) = (false, false);
 
     match args.rgex
         {
@@ -80,7 +80,7 @@ fn main()
         }
      else 
         {
-        if flag_r && flag_t && flag_v
+        if flag_r && flag_t
             {
             misc_util::display_settings();
             }
