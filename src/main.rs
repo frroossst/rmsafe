@@ -24,10 +24,6 @@ struct Args
     /// Change info file path
     #[clap(short, long, value_parser)]
     info: Option<String>,
-
-    /// Fail quietly
-    #[clap(short, long, value_parser)]
-    vrec: Option<String>,
     }
 
 fn main() 

@@ -1,6 +1,6 @@
 [package]
 name = "rmsafe"
-version = "2.4.2"
+version = "2.4.3"
 edition = "2021"
 description = "safely removing files and directories; moving them to trash"
 license = "MIT"
