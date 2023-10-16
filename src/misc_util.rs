@@ -35,6 +35,10 @@ impl TrashInfo
         content.push_str("DeletionDate=");
         content.push_str(&self.deletion_date);
 
+        if self.file_name.ends_with("/")
+            {
+            self.file_name.to_owned().pop();
+            }
         let mut fobj = File::create(path + "/" + self.file_name.as_str()).unwrap();
         write!(fobj, "{}", content).unwrap();
         }
