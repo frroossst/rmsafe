@@ -322,6 +322,6 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
 /// DeletionDate=2023-09-11T00:59:06
 fn add_info_file_to_trashcan(file_name: &PathBuf) 
     {
-    let recov_info = misc_util::TrashInfo::new(file_name);
+    let mut recov_info = misc_util::TrashInfo::new(file_name);
     recov_info.write(trashcan_config::get_info_file_path());
     }

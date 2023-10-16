@@ -24,7 +24,7 @@ impl TrashInfo
         TrashInfo { file_name: path.clone().into_os_string().into_string().unwrap(), deletion_date }
         }
 
-    pub fn write(&self, path: String) 
+    pub fn write(&mut self, path: String) 
         {
         let mut content = String::from("[Trash Info]\n");
 
@@ -37,8 +37,9 @@ impl TrashInfo
 
         if self.file_name.ends_with("/")
             {
-            self.file_name.to_owned().pop();
+            self.file_name.pop();
             }
+
         let mut fobj = File::create(path + "/" + self.file_name.as_str()).unwrap();
         write!(fobj, "{}", content).unwrap();
         }
