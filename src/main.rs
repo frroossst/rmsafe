@@ -26,8 +26,17 @@ struct Args
     info: Option<String>,
     }
 
+/// mv and rm commmands are supported on Linux only
+fn check_compilation_target() 
+    {
+    #[cfg(not(target_os = "window"))]
+    compile_error!("This project is only supported on Linux.");
+    }
+
 fn main() 
     {
+    check_compilation_target();
+
     let args = Args::parse();
 
     println!("{}", love_rust!("rmsafe"));

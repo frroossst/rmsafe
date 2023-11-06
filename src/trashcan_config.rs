@@ -110,3 +110,4 @@ pub fn set_trashcan_path(t: String)
             }
         }
     }
+
