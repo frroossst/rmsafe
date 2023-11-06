@@ -29,7 +29,7 @@ struct Args
 /// mv and rm commmands are supported on Linux only
 fn check_compilation_target() 
     {
-    #[cfg(not(target_os = "linu"))]
+    #[cfg(not(target_os = "linux"))]
     compile_error!("This project is only supported on Linux.");
     }
 
