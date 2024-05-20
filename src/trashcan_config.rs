@@ -46,7 +46,6 @@ pub fn set_info_file_path(i: String)
                     Err(e) => { eprintln!("[ERROR] {:?}", e) }
                     }
                 }
-
             println!("trashcan location changed from {:?} to {:?}", old_path, new_path);
             }
         Err(e) =>
@@ -64,12 +63,12 @@ pub fn get_info_file_path() -> String
 
 pub fn get_default_info_file_path() -> String
     {
-    unimplemented!()
+    "~/.local/share/Trash/info/".to_string()
     }
 
 pub fn get_default_trashcan_location() -> String
     {
-    unimplemented!()
+    "~/.local/share/Trash/files/".to_string()
     }
 
 pub fn get_trashcan_location() -> String

@@ -9,6 +9,7 @@ use chrono::prelude::*;
 Path=/home/home/Desktop/Projects/BombTheCardGame/counter
 DeletionDate=2023-02-21T20:44:34
 */
+#[derive(Debug, Clone)]
 pub struct TrashInfo
     {
     file_name: String,
