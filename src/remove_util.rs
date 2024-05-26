@@ -7,6 +7,59 @@ use std::io;
 
 
 
+
+pub fn clean_trashcan()
+    {
+    // invoke rm to empty trashcan and info folders
+    let trashcan_str = trashcan_config::get_trashcan_location();
+    let trashcan_path = Path::new(&trashcan_str);
+
+    let info_file_str = trashcan_config::get_info_file_path();
+    let info_file_path = Path::new(&info_file_str);
+
+    // ask for user confirmation
+    let mut input = String::new();
+    println!("this will empty the following folders:");
+    println!("\t{:?}", trashcan_path);
+    println!("\t{:?}", info_file_path);
+    println!("this will empty your trashcan, are you sure? Y/n");
+    io::stdin().read_line(&mut input).unwrap();
+
+    if input.trim() != "Y"
+        {
+        std::process::exit(0);
+        }
+
+    let status = Command::new("rm")
+        .arg("-rf")
+        .arg(trashcan_path)
+        .output();
+
+    status.expect("unable to empty trashcan folder, check permissions");
+
+    let status = Command::new("rm")
+        .arg("-f")
+        .arg(info_file_path)
+        .output();
+
+    status.expect("unable to empty trashcan info file, check permissions");
+
+    // create the trashcan and info file again
+    let status = Command::new("mkdir")
+        .arg("-p")
+        .arg(trashcan_path)
+        .output();
+
+    status.expect("unable to create trashcan folder, check permissions");
+
+    let status = Command::new("touch")
+        .arg(info_file_path)
+        .output();
+
+    status.expect("unable to create trashcan info file, check permissions");
+
+    }
+
 pub fn move_file_to_trash(file_to_be_trashed: PathBuf)
     {
     let has_wildcards = check_wildcard_patterns(&file_to_be_trashed);
@@ -298,12 +351,14 @@ pub fn retry_move_with_file_rename(filename: PathBuf)
                     else 
                         {
                         eprintln!("couldn't rename file from {:?} to {:?}", err_file_name, new_filename);
-                        panic!("move to trash failed even after a rename"); // panics because mv failed the second time here
+                        eprintln!("move to trash failed even after a rename"); // panics because mv failed the second time here
+                        std::process::exit(1);
                         }
                     }
                 Err(_) =>
                     {
-                    panic!("unable to move {:?}", err_file_name);
+                    eprintln!("unable to move {:?}", err_file_name);
+                    std::process::exit(1);
                     }
                 }
             }

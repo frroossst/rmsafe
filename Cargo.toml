@@ -1,6 +1,7 @@
+cargo-features = ["codegen-backend"]
 [package]
 name = "rmsafe"
-version = "2.4.6"
+version = "2.5.0"
 edition = "2021"
 description = "safely removing files and directories; moving them to trash"
 license = "MIT"
@@ -21,12 +22,8 @@ serde_derive = "1.0.147"
 toml = "0.7.3"
 
 [profile.release]
-strip = "none"
-opt-level = 3
+strip = true
+opt-level = "z"
 lto = true
 codegen-units = 1
-panic = "abort"
-
-[profile.dev]
-debug = 0
 

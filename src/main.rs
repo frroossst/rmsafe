@@ -24,6 +24,10 @@ struct Args
     /// Change info file path
     #[clap(short, long, value_parser)]
     info: Option<String>,
+
+    /// Clean the trashcan
+    #[clap(long, conflicts_with_all(&["file", "rgex", "trsh", "info"]))]
+    clean: bool,
     }
 
 /// mv and rm commmands are supported on Linux only
@@ -40,6 +44,13 @@ fn main()
     let args = Args::parse();
 
     println!("{}", love_rust!("rmsafe"));
+
+    if args.clean
+        {
+        remove_util::clean_trashcan();
+        std::process::exit(0);
+        }
+
 
     let (mut flag_r, mut flag_t) = (false, false);
 
