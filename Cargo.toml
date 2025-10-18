@@ -11,19 +11,15 @@ repository = "https://github.com/frroossst/rmsafe"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-love_rust = "0.3.0"
-clap = { version = "4.0.26", features = ["derive"] }
-confy = "0.5.1"
-chrono = "0.4.23"
-glob = "0.3.0"
-rand = "0.8.5"
-serde = { version = "1.0.147", features = ["derive"] }
-serde_derive = "1.0.147"
-toml = "0.7.3"
+
+[profile.dev]
+debug = 0
+codegen-backend = "cranelift"
 
 [profile.release]
-strip = true
 opt-level = "z"
+strip = true
 lto = true
 codegen-units = 1
+panic = "abort"
 
