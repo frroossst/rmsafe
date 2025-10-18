@@ -14,11 +14,9 @@ Instead of just rm(ing) files and folders, they instead are moved to the local t
 
 ## Usage
 
-NOTE: I have only tested this on Linux Mint 20.3. 
-
 ```
-// view trashcan path
-rmsafe 
+// view help 
+rms
 
 // removing a single file
 rmsafe test.txt
@@ -27,22 +25,20 @@ rmsafe test.txt
 rmsafe test_dir
 
 // removing files with wildcard matching; removing all files ending with .o
-rmsafe -r "*.o"  
+// the shell is supposed to handle the glob expansion not the program
+rmsafe -r *.o
 
-// change trashcan path
-rmsafe -t "/home/jane/Desktop/.rmsafe"
+
 ```
 
 Change your `.bashrc` to include the following
 ```
 alias rm='printf "Avoid using rm!"'
-alias rms="rmsafe"
 ```
 
 This disallows the use of rm, you can still use `sudo rm` and not setting rmsafe to rm
 ensures that you don't accidentally rm while on someone else's computer
 
-NOTE: The shell might interpret wildcards before they are passed down as function arguments which might cause problems, best to disable wildcard expansion on the shell
 
 ## Contribution
 
