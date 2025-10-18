@@ -28,8 +28,8 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
-            trashcan_location: "~/.local/share/Trash/files/".into(),
-            recovery_location: "~/.local/share/Trash/info/".into(),
+            trashcan_location: "/home/home/.local/share/Trash/files/".into(),
+            recovery_location: "/home/home/.local/share/Trash/info/".into(),
         }
     }
 }
@@ -107,12 +107,18 @@ impl Config {
     }
 }
 
-
 fn remove_files(files: Vec<String>) {
     let config = Config::parse_config();
 
     for file in files {
         let fpath = std::path::Path::new(&file).canonicalize().map_err(|e| eprintln!("{:?}", e)).ok().expect("something went terribly wrong with path construction");
+
+        let metadata = std::fs::symlink_metadata(&fpath).map_err(|e| eprintln!("{:?}", e)).ok().expect("something went terribly wrong with path construction");
+        if metadata.file_type().is_symlink() {
+            eprintln!("refusing to remove symbolic link: {:?}", fpath);
+            continue;
+        }
+
         generate_info_file(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
         move_file_to_trashcan(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
     }
@@ -124,7 +130,7 @@ fn generate_info_file(config: &Config, file: &std::path::Path) ->  std::result::
     let mut where_to_write = std::path::PathBuf::from(&config.recovery_location);
     where_to_write.push(format!("{}.trashinfo", filename.to_string_lossy()));
 
-    let content = format!("[Trash Info]\nPath={:?}\nDeletionDate={}", file, get_datetime());
+    let content = format!("[Trash Info]\nPath={:?}\nDeletionDate={}\n", file, get_datetime());
 
     std::fs::write(where_to_write, content)
 }
