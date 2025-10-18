@@ -20,9 +20,8 @@ debug = 0
 codegen-backend = "cranelift"
 
 [profile.release]
-opt-level = "z"
+opt-level = 3
 strip = true
 lto = true
 codegen-units = 1
 panic = "abort"
-

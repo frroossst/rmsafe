@@ -1,6 +1,7 @@
 fn print_help_message() -> ! {
     eprintln!("Usage:");
     eprintln!("--temp -t        moves files to /tmp instead of trashcan");
+    eprintln!("--config -c      resets config files to default");
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
 
@@ -20,6 +21,21 @@ struct Config {
     recovery_location: String,
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            trashcan_location: "~/.local/share/Trash/files/".into(),
+            recovery_location: "~/.local/share/Trash/info/".into(),
+        }
+    }
+}
+
+impl ToString for Config {
+    fn to_string(&self) -> String {
+        format!("trashcan_location = {}\nrecovery_location = {}", self.trashcan_location, self.recovery_location)
+    }
+}
+
 impl Config {
     fn get_config_path() -> std::path::PathBuf {
         let home = std::env::var("HOME").expect("no home tilde expansion found");
@@ -27,10 +43,30 @@ impl Config {
     }
     
     fn parse_config() -> Config {
-        unimplemented!()
+        let config_path = Config::get_config_path();
+        let content = std::fs::read_to_string(config_path).expect("unable to read config file");
+        let lines = content.lines();
+
+        let mut trashcan_location = Config::default().trashcan_location;
+        let mut recovery_location = Config::default().recovery_location;
+
+        for l in lines {
+            if l.starts_with("trashcan_location") {
+                let lsplt = l.split("=").collect::<Vec<&str>>();
+                trashcan_location = lsplt.last().expect("malformed config").to_string();
+            } else if l.starts_with("recovery_location") {
+                let lsplt = l.split("=").collect::<Vec<&str>>();
+                recovery_location = lsplt.last().expect("malformed config").to_string();
+            }
+        }
+
+        Config {
+            trashcan_location,
+            recovery_location,
+        }
     }
     
-    fn ensure_config() {
+    fn ensure_config(self) {
         let config_path = Config::get_config_path();
     
         if let Some(parent) = config_path.parent() {
@@ -41,10 +77,9 @@ impl Config {
             let mut file = std::fs::File::create(&config_path).expect("unable to create config file");
     
             std::io::Write::write_all(&mut file, 
-                b"trashcan_location = '~/.local/share/Trash/files/'\nrecovery_location = '~/.local/share/Trash/info/'\n",
+                self.to_string().as_bytes()
                 ).expect("unable to write to config file");
         }
-    
     }
 }
 
@@ -53,18 +88,23 @@ fn remove_files(files: Vec<String>) {
     let config = Config::parse_config();
 
     for file in files {
-        generate_info_file(&file).map_err(|e| eprintln!("{:?}", e)).ok();
-        move_file_to_trashcan(&file).map_err(|e| eprintln!("{:?}", e)).ok();
+        let fpath = std::path::Path::new(&file).canonicalize().map_err(|e| eprintln!("{:?}", e)).ok().expect("something went terribly wrong with path construction");
+        generate_info_file(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
+        move_file_to_trashcan(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
     }
 }
 
-fn generate_info_file(file: &str) ->  std::result::Result<(), ()> {
-    unimplemented!()
+fn generate_info_file(config: &Config, file: &std::path::Path) ->  std::result::Result<(), ()> {
+    let where_to_write = config.recovery_location.clone();
 
+    let content = format!("[Trash Info]\nPath={}\nDeletionDate={}", file);
+
+    std::fs::write(where_to_write, content);
+
+    unimplemented!()
 }
 
-
-fn move_file_to_trashcan(file: &str) -> std::result::Result<(), ()> {
+fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result::Result<(), ()> {
     unimplemented!()
 
 }
@@ -73,7 +113,7 @@ fn main() {
     let mut args = std::env::args();
     let _program = args.next();
 
-    Config::ensure_config();
+    Config::default().ensure_config();
 
     let arguments = args.collect::<Vec<String>>();
 
@@ -81,6 +121,7 @@ fn main() {
     if let Some(cmd) = action {
         match cmd.as_str() {
             "-t" | "--tmp" => todo!("move to /tmp"),
+            "-c" | "--config" => todo!("reset config"),
             "--restore" => todo!("restore all things that match the glob"),
             _ => {
                 let v = arguments.into_iter().collect::<Vec<String>>();
@@ -90,6 +131,5 @@ fn main() {
             }
         }
     } 
-
     print_help_message();
 }
