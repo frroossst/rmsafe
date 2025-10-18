@@ -4,9 +4,39 @@ fn print_help_message() -> ! {
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
 
-    eprintln!("Edit ~/.config/rmsafe/config.toml to change default behaviour");
+    eprintln!("\nEdit ~/.config/rmsafe/config.toml to change default behaviour");
+
+
+    let content_bytes = std::fs::read(get_config_path()).expect("failed to read config file");
+    let content = String::from_utf8(content_bytes).expect("config was not valid utf-8");
+
+    eprintln!("\n{}", content.trim_end());
 
     std::process::exit(1)
+}
+
+#[inline]
+fn get_config_path() -> std::path::PathBuf {
+    let home = std::env::var("HOME").expect("no home tilde expansion found");
+    std::path::PathBuf::from(format!("{}/.config/rmsafe/config.toml", home))
+}
+
+#[inline]
+fn ensure_config() {
+    let config_path = get_config_path();
+
+    if let Some(parent) = config_path.parent() {
+        std::fs::create_dir_all(parent).expect("unable to create config directory path");
+    }
+
+    if !config_path.exists() {
+        let mut file = std::fs::File::create(&config_path).expect("unable to create config file");
+
+        std::io::Write::write_all(&mut file, 
+            b"trashcan_location = '~/.local/share/Trash/files/'\nrecovery_location = '~/.local/share/Trash/info/'\n",
+            ).expect("unable to write to config file");
+    }
+
 }
 
 fn remove_files(files: Vec<String>) {
@@ -24,6 +54,8 @@ fn move_file_to_trashcan(file: String) {
 fn main() {
     let mut args = std::env::args();
     let _program = args.next();
+
+    ensure_config();
 
     let arguments = args.collect::<Vec<String>>();
 
