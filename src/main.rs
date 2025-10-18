@@ -1,3 +1,7 @@
+use std::path::Path;
+
+use rmsafe::datetime::get_datetime;
+
 fn print_help_message() -> ! {
     eprintln!("Usage:");
     eprintln!("--temp -t        moves files to /tmp instead of trashcan");
@@ -53,10 +57,22 @@ impl Config {
         for l in lines {
             if l.starts_with("trashcan_location") {
                 let lsplt = l.split("=").collect::<Vec<&str>>();
-                trashcan_location = lsplt.last().expect("malformed config").to_string();
+                trashcan_location = lsplt
+                    .last()
+                    .expect("malformed config")
+                    .to_string()
+                    .trim()
+                    .trim_matches(|c| c == '\'' || c == '"')
+                    .to_string();
             } else if l.starts_with("recovery_location") {
                 let lsplt = l.split("=").collect::<Vec<&str>>();
-                recovery_location = lsplt.last().expect("malformed config").to_string();
+                recovery_location = lsplt
+                    .last()
+                    .expect("malformed config")
+                    .to_string()
+                    .trim()
+                    .trim_matches(|c| c == '\'' || c == '"')
+                    .to_string();
             }
         }
 
@@ -80,6 +96,14 @@ impl Config {
                 self.to_string().as_bytes()
                 ).expect("unable to write to config file");
         }
+
+        let config: Config = Config::parse_config();
+
+        let trashfiles = config.trashcan_location.clone();
+        let infofiles = config.recovery_location.clone();
+
+        std::fs::create_dir_all(Path::new(&trashfiles)).expect("unable to create trashcan directory");
+        std::fs::create_dir_all(Path::new(&infofiles)).expect("unable to create recovery directory");
     }
 }
 
@@ -94,22 +118,34 @@ fn remove_files(files: Vec<String>) {
     }
 }
 
-fn generate_info_file(config: &Config, file: &std::path::Path) ->  std::result::Result<(), ()> {
-    let where_to_write = config.recovery_location.clone();
+fn generate_info_file(config: &Config, file: &std::path::Path) ->  std::result::Result<(), std::io::Error> {
+    // make the info file at recovery_location/<filename>.trashinfo
+    let filename = file.file_name().expect("unable to get filename from path");
+    let mut where_to_write = std::path::PathBuf::from(&config.recovery_location);
+    where_to_write.push(format!("{}.trashinfo", filename.to_string_lossy()));
 
-    let content = format!("[Trash Info]\nPath={}\nDeletionDate={}", file);
+    let content = format!("[Trash Info]\nPath={:?}\nDeletionDate={}", file, get_datetime());
 
-    std::fs::write(where_to_write, content);
-
-    unimplemented!()
+    std::fs::write(where_to_write, content)
 }
 
 fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result::Result<(), ()> {
-    unimplemented!()
+    // move the file to trashcan_location/<filename>
+    let filename = file.file_name().expect("unable to get filename from path");
+    let mut where_to_move = std::path::PathBuf::from(&config.trashcan_location);
+    where_to_move.push(filename);
 
+    std::fs::rename(file, where_to_move).map_err(|e| {
+        eprintln!("failed to move file to trashcan: {:?}", e);
+    })
 }
 
 fn main() {
+    if !cfg!(target_os = "linux") {
+        eprintln!("only linux based platforms are supported");
+        std::process::exit(1);
+    }
+
     let mut args = std::env::args();
     let _program = args.next();
 
