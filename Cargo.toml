@@ -13,6 +13,9 @@ repository = "https://github.com/frroossst/rmsafe"
 name = "rms"
 path = "src/main.rs"
 
+[package.metadata.os]
+required = ["linux"]
+
 [dependencies]
 
 [profile.dev]
