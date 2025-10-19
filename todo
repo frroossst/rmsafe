@@ -1,3 +1,1 @@
-- if symlinmks then ignores
-
 - avoid heap allocs 

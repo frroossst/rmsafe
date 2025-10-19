@@ -1,10 +1,8 @@
-use std::path::Path;
-
 use rmsafe::datetime::get_datetime;
 
 fn print_help_message() -> ! {
     eprintln!("Usage:");
-    eprintln!("--temp -t        moves files to /tmp instead of trashcan");
+    eprintln!("--tmp -t         moves files to /tmp instead of trashcan");
     eprintln!("--reinit -c      resets config files to default");
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
@@ -102,8 +100,8 @@ impl Config {
         let trashfiles = config.trashcan_location.clone();
         let infofiles = config.recovery_location.clone();
 
-        std::fs::create_dir_all(Path::new(&trashfiles)).expect("unable to create trashcan directory");
-        std::fs::create_dir_all(Path::new(&infofiles)).expect("unable to create recovery directory");
+        std::fs::create_dir_all(std::path::Path::new(&trashfiles)).expect("unable to create trashcan directory");
+        std::fs::create_dir_all(std::path::Path::new(&infofiles)).expect("unable to create recovery directory");
     }
 }
 
@@ -162,7 +160,18 @@ fn main() {
     let action = arguments.first().cloned();
     if let Some(cmd) = action {
         match cmd.as_str() {
-            "-t" | "--tmp" => todo!("move to /tmp"),
+            "-t" | "--tmp" => {
+                let v = arguments.into_iter().skip(1).collect::<Vec<String>>();
+                let files_to_remove = v.join(" ");
+
+                let cmd = std::process::Command::new("mv")
+                    .arg(files_to_remove)
+                    .arg("/tmp/")
+                    .status()
+                    .expect("failed to execute the mv process");
+
+                std::process::exit(cmd.code().unwrap_or(0));
+            }
             "-c" | "--reinit" => todo!("reset config"),
             "--restore" => todo!("restore all things that match the glob"),
             _ => {
