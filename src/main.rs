@@ -4,8 +4,8 @@ use rmsafe::datetime::get_datetime;
 
 fn print_help_message() -> ! {
     eprintln!("Usage:");
-    eprintln!("--temp -t        moves files to /tmp instead of trashcan");
-    eprintln!("--config -c      resets config files to default");
+    eprintln!("--tmp -t         moves files to /tmp instead of trashcan");
+    eprintln!("--reinit -c      resets config files to default");
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
 
@@ -163,7 +163,7 @@ fn main() {
     if let Some(cmd) = action {
         match cmd.as_str() {
             "-t" | "--tmp" => todo!("move to /tmp"),
-            "-c" | "--config" => todo!("reset config"),
+            "-c" | "--reinit" => todo!("reset config"),
             "--restore" => todo!("restore all things that match the glob"),
             _ => {
                 let v = arguments.into_iter().collect::<Vec<String>>();
