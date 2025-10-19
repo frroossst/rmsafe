@@ -1,7 +1,7 @@
 cargo-features = ["codegen-backend"]
 [package]
 name = "rmsafe"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2021"
 description = "safely removing files and directories; moving them to trash"
 license = "MIT"
