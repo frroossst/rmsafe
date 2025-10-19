@@ -4,7 +4,7 @@ use rmsafe::datetime::get_datetime;
 
 fn print_help_message() -> ! {
     eprintln!("Usage:");
-    eprintln!("--tmp -t         moves files to /tmp instead of trashcan");
+    eprintln!("--temp -t        moves files to /tmp instead of trashcan");
     eprintln!("--reinit -c      resets config files to default");
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
