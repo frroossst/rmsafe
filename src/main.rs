@@ -119,11 +119,11 @@ fn remove_files(files: Vec<String>) {
     for file in files {
         let fpath = std::path::Path::new(&file)
             .canonicalize()
-            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .map_err(|e| eprintln!("[ERROR] {:?} {:?}", &file, e))
             .expect("something went terribly wrong with path construction");
 
         let metadata = std::fs::symlink_metadata(&fpath)
-            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .map_err(|e| eprintln!("[ERROR] {:?} {:?}", &fpath, e))
             .expect("something went terribly wrong with path construction");
         if metadata.file_type().is_symlink() {
             eprintln!("[ERROR] refusing to remove symbolic link: {:?}", fpath);
