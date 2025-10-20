@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use rmsafe::datetime::get_datetime;
 
 fn print_help_message() -> ! {
@@ -32,9 +34,9 @@ impl Default for Config {
     }
 }
 
-impl ToString for Config {
-    fn to_string(&self) -> String {
-        format!("trashcan_location = {}\nrecovery_location = {}", self.trashcan_location, self.recovery_location)
+impl Display for Config {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "trashcan_location = {}\nrecovery_location = {}", self.trashcan_location, self.recovery_location)
     }
 }
 
@@ -109,16 +111,16 @@ fn remove_files(files: Vec<String>) {
     let config = Config::parse_config();
 
     for file in files {
-        let fpath = std::path::Path::new(&file).canonicalize().map_err(|e| eprintln!("{:?}", e)).ok().expect("something went terribly wrong with path construction");
+        let fpath = std::path::Path::new(&file).canonicalize().map_err(|e| eprintln!("[ERROR] {:?}", e)).expect("something went terribly wrong with path construction");
 
-        let metadata = std::fs::symlink_metadata(&fpath).map_err(|e| eprintln!("{:?}", e)).ok().expect("something went terribly wrong with path construction");
+        let metadata = std::fs::symlink_metadata(&fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).expect("something went terribly wrong with path construction");
         if metadata.file_type().is_symlink() {
-            eprintln!("refusing to remove symbolic link: {:?}", fpath);
+            eprintln!("[ERROR] refusing to remove symbolic link: {:?}", fpath);
             continue;
         }
 
-        generate_info_file(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
-        move_file_to_trashcan(&config, &fpath).map_err(|e| eprintln!("{:?}", e)).ok();
+        generate_info_file(&config, &fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).ok();
+        move_file_to_trashcan(&config, &fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).ok();
     }
 }
 
@@ -140,14 +142,14 @@ fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result
     where_to_move.push(filename);
 
     std::fs::rename(file, where_to_move).map_err(|e| {
-        eprintln!("failed to move file to trashcan: {:?}", e);
+        eprintln!("[ERROR] failed to move file to trashcan: {:?}", e);
     })
 }
 
 #[cfg(target_os = "linux")]
 fn main() {
     if !cfg!(target_os = "linux") {
-        eprintln!("only linux based platforms are supported");
+        eprintln!("[ERROR] only linux based platforms are supported");
         std::process::exit(1);
     }
 
