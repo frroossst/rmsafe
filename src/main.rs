@@ -157,15 +157,13 @@ fn generate_info_file(
     std::fs::write(where_to_write, content)
 }
 
-fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result::Result<(), ()> {
+fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result::Result<(), std::io::Error> {
     // move the file to trashcan_location/<filename>
     let filename = file.file_name().expect("unable to get filename from path");
     let mut where_to_move = std::path::PathBuf::from(&config.trashcan_location);
     where_to_move.push(filename);
 
-    std::fs::rename(file, where_to_move).map_err(|e| {
-        eprintln!("[ERROR] failed to move file to trashcan: {:?}", e);
-    })
+    std::fs::rename(file, where_to_move)
 }
 
 #[cfg(target_os = "linux")]
