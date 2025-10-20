@@ -3,7 +3,7 @@ use rmsafe::datetime::get_datetime;
 fn print_help_message() -> ! {
     eprintln!("Usage:");
     eprintln!("--tmp -t         moves files to /tmp instead of trashcan");
-    eprintln!("--reinit -c      resets config files to default");
+    eprintln!("--reinit         resets config files to default");
     eprintln!("--restore        restores files that match the pattern");
     eprintln!("--help           prints this message");
 
@@ -144,6 +144,7 @@ fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result
     })
 }
 
+#[cfg(target_os = "linux")]
 fn main() {
     if !cfg!(target_os = "linux") {
         eprintln!("only linux based platforms are supported");
@@ -172,7 +173,16 @@ fn main() {
 
                 std::process::exit(cmd.code().unwrap_or(0));
             }
-            "-c" | "--reinit" => todo!("reset config"),
+            "--reinit" => {
+                let default_config = Config::default();
+                let config_path = Config::get_config_path();
+
+                std::fs::write(config_path, default_config.to_string()).expect("unable to write default config");
+
+                eprintln!("[OK]    config reset to default");
+
+                std::process::exit(0);
+            }
             "--restore" => todo!("restore all things that match the glob"),
             _ => {
                 let v = arguments.into_iter().collect::<Vec<String>>();
