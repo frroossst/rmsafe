@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use rmsafe::datetime::get_datetime;
 
 fn print_help_message() -> ! {
@@ -34,7 +32,7 @@ impl Default for Config {
     }
 }
 
-impl Display for Config {
+impl std::fmt::Display for Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -186,6 +184,10 @@ fn main() {
     let action = arguments.first().cloned();
     if let Some(cmd) = action {
         match cmd.as_str() {
+            "-v" | "--version" => {
+                eprintln!("{}", std::env!("CARGO_PKG_VERSION"));
+                std::process::exit(0);
+            },
             "-t" | "--tmp" => {
                 let v = arguments.into_iter().skip(1).collect::<Vec<String>>();
                 let files_to_remove = v.join(" ");
@@ -211,6 +213,7 @@ fn main() {
             }
             "--restore" => todo!("restore all things that match the glob"),
             _ => {
+                // otherwise
                 let v = arguments.into_iter().collect::<Vec<String>>();
                 remove_files(v);
 
