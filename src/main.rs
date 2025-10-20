@@ -11,8 +11,8 @@ fn print_help_message() -> ! {
 
     eprintln!("\nEdit ~/.config/rmsafe/config.toml to change default behaviour");
 
-
-    let content_bytes = std::fs::read(Config::get_config_path()).expect("failed to read config file");
+    let content_bytes =
+        std::fs::read(Config::get_config_path()).expect("failed to read config file");
     let content = String::from_utf8(content_bytes).expect("config was not valid utf-8");
 
     eprintln!("\n{}", content.trim_end());
@@ -36,7 +36,11 @@ impl Default for Config {
 
 impl Display for Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "trashcan_location = {}\nrecovery_location = {}", self.trashcan_location, self.recovery_location)
+        write!(
+            f,
+            "trashcan_location = {}\nrecovery_location = {}",
+            self.trashcan_location, self.recovery_location
+        )
     }
 }
 
@@ -45,7 +49,7 @@ impl Config {
         let home = std::env::var("HOME").expect("no home tilde expansion found");
         std::path::PathBuf::from(format!("{}/.config/rmsafe/config.toml", home))
     }
-    
+
     fn parse_config() -> Config {
         let config_path = Config::get_config_path();
         let content = std::fs::read_to_string(config_path).expect("unable to read config file");
@@ -81,20 +85,20 @@ impl Config {
             recovery_location,
         }
     }
-    
+
     fn ensure_config(self) {
         let config_path = Config::get_config_path();
-    
+
         if let Some(parent) = config_path.parent() {
             std::fs::create_dir_all(parent).expect("unable to create config directory path");
         }
-    
+
         if !config_path.exists() {
-            let mut file = std::fs::File::create(&config_path).expect("unable to create config file");
-    
-            std::io::Write::write_all(&mut file, 
-                self.to_string().as_bytes()
-                ).expect("unable to write to config file");
+            let mut file =
+                std::fs::File::create(&config_path).expect("unable to create config file");
+
+            std::io::Write::write_all(&mut file, self.to_string().as_bytes())
+                .expect("unable to write to config file");
         }
 
         let config: Config = Config::parse_config();
@@ -102,8 +106,10 @@ impl Config {
         let trashfiles = config.trashcan_location.clone();
         let infofiles = config.recovery_location.clone();
 
-        std::fs::create_dir_all(std::path::Path::new(&trashfiles)).expect("unable to create trashcan directory");
-        std::fs::create_dir_all(std::path::Path::new(&infofiles)).expect("unable to create recovery directory");
+        std::fs::create_dir_all(std::path::Path::new(&trashfiles))
+            .expect("unable to create trashcan directory");
+        std::fs::create_dir_all(std::path::Path::new(&infofiles))
+            .expect("unable to create recovery directory");
     }
 }
 
@@ -111,26 +117,42 @@ fn remove_files(files: Vec<String>) {
     let config = Config::parse_config();
 
     for file in files {
-        let fpath = std::path::Path::new(&file).canonicalize().map_err(|e| eprintln!("[ERROR] {:?}", e)).expect("something went terribly wrong with path construction");
+        let fpath = std::path::Path::new(&file)
+            .canonicalize()
+            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .expect("something went terribly wrong with path construction");
 
-        let metadata = std::fs::symlink_metadata(&fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).expect("something went terribly wrong with path construction");
+        let metadata = std::fs::symlink_metadata(&fpath)
+            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .expect("something went terribly wrong with path construction");
         if metadata.file_type().is_symlink() {
             eprintln!("[ERROR] refusing to remove symbolic link: {:?}", fpath);
             continue;
         }
 
-        generate_info_file(&config, &fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).ok();
-        move_file_to_trashcan(&config, &fpath).map_err(|e| eprintln!("[ERROR] {:?}", e)).ok();
+        generate_info_file(&config, &fpath)
+            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .ok();
+        move_file_to_trashcan(&config, &fpath)
+            .map_err(|e| eprintln!("[ERROR] {:?}", e))
+            .ok();
     }
 }
 
-fn generate_info_file(config: &Config, file: &std::path::Path) ->  std::result::Result<(), std::io::Error> {
+fn generate_info_file(
+    config: &Config,
+    file: &std::path::Path,
+) -> std::result::Result<(), std::io::Error> {
     // make the info file at recovery_location/<filename>.trashinfo
     let filename = file.file_name().expect("unable to get filename from path");
     let mut where_to_write = std::path::PathBuf::from(&config.recovery_location);
     where_to_write.push(format!("{}.trashinfo", filename.to_string_lossy()));
 
-    let content = format!("[Trash Info]\nPath={:?}\nDeletionDate={}\n", file, get_datetime());
+    let content = format!(
+        "[Trash Info]\nPath={:?}\nDeletionDate={}\n",
+        file,
+        get_datetime()
+    );
 
     std::fs::write(where_to_write, content)
 }
@@ -179,7 +201,8 @@ fn main() {
                 let default_config = Config::default();
                 let config_path = Config::get_config_path();
 
-                std::fs::write(config_path, default_config.to_string()).expect("unable to write default config");
+                std::fs::write(config_path, default_config.to_string())
+                    .expect("unable to write default config");
 
                 eprintln!("[OK]    config reset to default");
 
@@ -193,6 +216,6 @@ fn main() {
                 std::process::exit(0);
             }
         }
-    } 
+    }
     print_help_message();
 }
