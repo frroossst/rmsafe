@@ -157,7 +157,10 @@ fn generate_info_file(
     std::fs::write(where_to_write, content)
 }
 
-fn move_file_to_trashcan(config: &Config, file: &std::path::Path) -> std::result::Result<(), std::io::Error> {
+fn move_file_to_trashcan(
+    config: &Config,
+    file: &std::path::Path,
+) -> std::result::Result<(), std::io::Error> {
     // move the file to trashcan_location/<filename>
     let filename = file.file_name().expect("unable to get filename from path");
     let mut where_to_move = std::path::PathBuf::from(&config.trashcan_location);
@@ -191,7 +194,7 @@ fn main() {
                     .arg(files_to_remove)
                     .arg("/tmp/")
                     .status()
-                    .expect("failed to execute the mv process");
+                    .expect("[ERROR] failed to execute the mv process");
 
                 std::process::exit(cmd.code().unwrap_or(0));
             }
