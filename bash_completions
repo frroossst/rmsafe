@@ -1,22 +1,27 @@
 # rmsafe autocompletions code
 _rms_completion() {
-    local cur prev recovery_dir files
+    local cur prev opts recovery_dir files
 
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    # Only provide completions for --restore
+    # Define available options
+    opts="--tmp -t --reinit --restore --help"
+
+    # If previous word is --restore, complete with files
     if [[ "$prev" == "--restore" ]]; then
         # Parse recovery_location from config.toml
         recovery_dir=$(grep '^recovery_location' ~/.config/rmsafe/config.toml | cut -d'=' -f2 | tr -d ' "')
-        
-        # List files in recovery directory
         if [[ -d "$recovery_dir" ]]; then
             files=$(ls "$recovery_dir" 2>/dev/null)
             COMPREPLY=( $(compgen -W "$files" -- "$cur") )
         fi
+        return
     fi
+
+    # Complete flags/options
+    COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
 }
 
 complete -F _rms_completion rms

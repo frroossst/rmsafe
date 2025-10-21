@@ -169,11 +169,6 @@ fn move_file_to_trashcan(
 
 #[cfg(target_os = "linux")]
 fn main() {
-    if !cfg!(target_os = "linux") {
-        eprintln!("[ERROR] only linux based platforms are supported");
-        std::process::exit(1);
-    }
-
     let mut args = std::env::args();
     let _program = args.next();
 
@@ -184,6 +179,7 @@ fn main() {
     let action = arguments.first().cloned();
     if let Some(cmd) = action {
         match cmd.as_str() {
+            "--help" => print_help_message(),
             "-v" | "--version" => {
                 eprintln!("{}", std::env!("CARGO_PKG_VERSION"));
                 std::process::exit(0);
@@ -211,7 +207,16 @@ fn main() {
 
                 std::process::exit(0);
             }
-            "--restore" => todo!("restore all things that match the glob"),
+            "--restore" => {
+                let c = Config::parse_config();
+
+                let ls = std::fs::read_dir(std::path::Path::new(&c.recovery_location)).expect("oops");
+                for i in ls {
+                    dbg!(i.ok());
+                }
+
+                todo!()
+            },
             _ => {
                 // otherwise
                 let v = arguments.into_iter().collect::<Vec<String>>();

@@ -20,6 +20,7 @@ required = ["linux"]
 
 [profile.dev]
 debug = 0
+opt-level = 0
 codegen-backend = "cranelift"
 
 [profile.release]
