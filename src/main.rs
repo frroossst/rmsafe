@@ -186,15 +186,22 @@ fn main() {
             },
             "-t" | "--tmp" => {
                 let v = arguments.into_iter().skip(1).collect::<Vec<String>>();
-                let files_to_remove = v.join(" ");
 
-                let cmd = std::process::Command::new("mv")
-                    .arg(files_to_remove)
-                    .arg("/tmp/")
-                    .status()
-                    .expect("[ERROR] failed to execute the mv process");
+                for f in &v {
+                    let cmd = std::process::Command::new("mv")
+                        .arg(f)
+                        .arg("/tmp/")
+                        .status()
+                        .expect("[ERROR] failed to execute the mv process");
 
-                std::process::exit(cmd.code().unwrap_or(0));
+                    if !cmd.success() {
+                        eprintln!("[ERROR] failed to move file {:?} to /tmp/", f);
+                    } else {
+                        eprintln!("[OK]    moved file {:?} to /tmp/", f);
+                    }
+                }
+
+                std::process::exit(0);
             }
             "--reinit" => {
                 let default_config = Config::default();
