@@ -40,7 +40,7 @@ fn main() {
                         eprintln!("[ERROR] failed to move file {:?} to /tmp/", f);
                         err_code = 1;
                     } else {
-                        eprintln!("[OK]    moved file {:?} to /tmp/", f);
+                        eprintln!("[OK] moved file {:?} to /tmp/", f);
                     }
                 }
 
@@ -48,23 +48,33 @@ fn main() {
             },
             _ => { // otherwise just move to /tmp/
                 let mut err_code = 0;
-                let v = arguments.into_iter().skip(1).collect::<Vec<String>>();
-
+                let v = arguments.into_iter().collect::<Vec<String>>();
                 for f in &v {
+                    let file_name = std::path::Path::new(f).file_name().unwrap_or_default().to_string_lossy().to_string();
+                    let mut target_path = std::path::PathBuf::from("/tmp/");
+                    target_path.push(&file_name);
+                    // If file exists, append timestamp
+                    if target_path.exists() {
+                        let timestamp = std::time::SystemTime::now()
+                            .duration_since(std::time::UNIX_EPOCH)
+                            .unwrap()
+                            .as_secs();
+                        let new_name = format!("{}_{}", file_name, timestamp);
+                        target_path = std::path::PathBuf::from("/tmp/");
+                        target_path.push(new_name);
+                    }
                     let cmd = std::process::Command::new("mv")
                         .arg(f)
-                        .arg("/tmp/")
+                        .arg(target_path.to_str().unwrap())
                         .status()
                         .expect("[ERROR] failed to execute the mv process");
-
                     if !cmd.success() {
                         eprintln!("[ERROR] failed to move file {:?} to /tmp/", f);
                         err_code = 1;
                     } else {
-                        eprintln!("[OK]    moved file {:?} to /tmp/", f);
+                        println!("[OK] moved file {:?} to {}", f, target_path.display());
                     }
                 }
-
                 std::process::exit(err_code);
             }
         }

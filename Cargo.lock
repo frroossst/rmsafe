@@ -4,4 +4,4 @@ version = 4
 
 [[package]]
 name = "rmsafe"
-version = "3.1.4"
+version = "4.0.0"
